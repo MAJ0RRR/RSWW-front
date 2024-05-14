@@ -1,0 +1,99 @@
+body {
+    background-color: #F6F6F6;
+}
+
+.page-content {
+    background-color: #FFFFFF;
+    margin: auto;
+    margin-top: 50px;
+    width: 80%;
+    max-width: 1200px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.page-title {
+    font-size: 40px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.page-section {
+    background-color: #F0F0F0;
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.page-section-title {
+    font-size: 36px;
+}
+
+.page-section-content {
+    margin-top: 15px;
+    background-color: #F6F6F6;
+}
+
+.page-section-content-title {
+    font-size: 30px;
+    margin-bottom: 5px;
+}
+
+.page-section-content-content {
+    font-size: 16px;
+}
+
+.user-input {
+    display: flex;
+    justify-content: space-between;
+    background-color: #E6E6E6;
+    padding: 10px;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.left {
+    width: 50%;
+    text-align: left;
+}
+
+.right {
+    width: 60%;
+    text-align: right;
+}
+
+.user-input-result-one {
+    text-align: right;
+    font-size: 20px;
+    padding: 10px;
+}
+
+.user-input-result-two {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 20px;
+}
+
+.user-input-result-two-left {
+    width: 30%;
+    text-align: left;
+}
+
+.user-input-result-two-right {
+    width: 70%;
+    text-align: right;
+}
+
+.two-elements {
+    display: flex;
+    justify-content: space-between;
+    font-size: 36px;
+}
+
+.button-style {
+    font-size: 36px;
+    margin-left: 20px;
+}
