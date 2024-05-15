@@ -242,9 +242,9 @@ function ReservationPage() {
                 Food total: {hotel.foodPricePerPerson} PLN x 4 days ={" "}
                 {hotel.foodPricePerPerson * 4} PLN
               </div>
-              <div className="page-section-content-title">
-                Room configuration
-              </div>
+            </div>
+            <div className="page-section-content-title">Room configuration</div>
+            <div className="page-section-content-content">
               {reservation.rooms.map((item) => (
                 <div className="user-input">
                   <div className="left">
@@ -263,11 +263,11 @@ function ReservationPage() {
                   </div>
                 </div>
               ))}
-              <div className="user-input-result-two">
-                <div className="user-input-result-two-left"></div>
-                <div className="user-input-result-two-right">
-                  Rooms total: {roomTotalPriceString} = {roomTotalPrice} PLN
-                </div>
+            </div>
+            <div className="user-input-result-two">
+              <div className="user-input-result-two-left"></div>
+              <div className="user-input-result-two-right">
+                Rooms total: {roomTotalPriceString} = {roomTotalPrice} PLN
               </div>
             </div>
           </div>
