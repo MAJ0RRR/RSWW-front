@@ -1,0 +1,87 @@
+body {
+    background-color: #F6F6F6;
+}
+
+.page-content {
+    background-color: #FFFFFF;
+    margin: auto;
+    margin-top: 50px;
+    width: 80%;
+    max-width: 1200px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.page-title {
+    font-size: 40px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.elements {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.left-20 {
+    width: 20%;
+    text-align: left;
+}
+
+.middle-60 {
+    width: 60%;
+    text-align: center;
+}
+
+.right-20 {
+    width: 20%;
+    text-align: right;
+}
+
+.left-50 {
+    width: 50%;
+    text-align: left;
+}
+
+.left-80 {
+    width: 80%;
+    text-align: left;
+}
+
+.right-50-relative {
+    width: 50%;
+    position: relative;
+}
+
+.right-20-relative {
+    width: 20%;
+    position: relative;
+}
+
+.bottom-right {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.button-style {
+    font-size: 24px;
+}
+
+.font-size-36 {
+    font-size: 36px;
+}
+
+.color-red {
+    color: #FF5252;
+}
+
+.color-green {
+    color: #009718;
+}
+
+.color-orange {
+    color: #DDB117;
+}

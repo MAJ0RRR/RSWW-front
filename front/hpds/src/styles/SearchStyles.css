@@ -1,0 +1,36 @@
+.label-style {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.search-container {
+  display: "flex";
+  flex-direction: "row";
+  align-items: "center";
+}
+
+.search-input-group {
+  display: flex;
+}
+
+.search-input-field {
+  margin-right: 20px;
+}
+
+.list-item:active {
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.dropdown-button {
+  background-color: #FFFFFF;
+  border-color: #e5e5ea;
+  border-width: 1px;
+  border-radius: 6px;
+  width: 200px;
+}
+
+.dropdown-button:hover {
+  background-color: #FFFFFF;
+  border-color: #2589f5;
+}

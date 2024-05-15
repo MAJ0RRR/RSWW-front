@@ -1,18 +1,21 @@
+import "../styles/NavBarStyles.css";
+import { Link } from "react-router-dom";
+
 function NavBarNotLoggedIn() {
   return (
-    <div style={{ display: "flex" }}>
+    <div className="nav">
       <ul className="nav justify-content-left" style={{ flexGrow: 1 }}>
         <li className="nav-item">
-          <a className="nav-link" href="#">
+          <Link to="/" className="nav-link">
             Home
-          </a>
+          </Link>
         </li>
       </ul>
       <ul className="nav justify-content-right">
         <li className="nav-item">
-          <a className="nav-link" href="#">
+          <Link to="/login" className="nav-link">
             Log in
-          </a>
+          </Link>
         </li>
       </ul>
     </div>

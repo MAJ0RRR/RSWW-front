@@ -1,0 +1,9 @@
+.nav {
+    display: flex;
+    background-color: #E7E5E5;
+    font-size: 30px;
+}
+
+.nav-link {
+    color: #000000;
+}
