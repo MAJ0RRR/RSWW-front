@@ -40,6 +40,11 @@ body {
     text-align: right;
 }
 
+.right-90 {
+    width: 90%;
+    text-align: right;
+}
+
 .left-50 {
     width: 50%;
     text-align: left;

@@ -1,10 +1,137 @@
 import NavBarLoggedIn from "../components/NavBarLoggedIn";
 import "../styles/ReservationPageStyles.css";
+import "rsuite/dist/rsuite.min.css";
 import Button from "react-bootstrap/Button";
+import { InputNumber } from "rsuite";
+import { Checkbox } from "rsuite";
 
 function ReservationPage() {
   //mocked vairables
   const page_status = "noPayment";
+  const reservation = {
+    toHotelTransportOptionId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    fromHotelTransportOptionId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    hotelId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    numberOfAdults: 1,
+    numberOfUnder3: 1,
+    numberOfUnder10: 1,
+    numberOfUnder18: 1,
+    dateTime: "2024-05-15T15:22:34.025Z",
+    numberOfNights: 2,
+    foodIncluded: false,
+    rooms: [
+      {
+        size: 2,
+        number: 1,
+      },
+      {
+        size: 6,
+        number: 2,
+      },
+    ],
+    price: 11111,
+    hotelName: "hotelName",
+    hotelCity: "hotelCity",
+    typeOfTransport: "Plane",
+    fromCity: "fromCity",
+    finalized: true,
+    reservedUntil: "2024-05-15T15:22:34.025Z",
+  };
+  const fromHotelTransportOption = {
+    id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    type: "Plane",
+    start: "2024-05-15T15:24:41.210Z",
+    end: "2024-05-15T15:24:41.210Z",
+    seatsAvailable: 0,
+    fromCountry: "fromCountry",
+    fromCity: "fromCity",
+    fromStreet: "fromStreet",
+    fromShowName: "fromShowName",
+    toCountry: "toCountry",
+    toCity: "toCity",
+    toStreet: "toStreet",
+    toShowName: "toShowName",
+    priceAdult: 1,
+    priceUnder3: 2,
+    priceUnder10: 3,
+    priceUnder18: 4,
+  };
+  const toHotelTransportOption = {
+    id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    type: "Plane",
+    start: "2024-05-15T15:24:41.210Z",
+    end: "2024-05-15T15:24:41.210Z",
+    seatsAvailable: 0,
+    fromCountry: "FromCountry",
+    fromCity: "FromCity",
+    fromStreet: "FromStreet",
+    fromShowName: "fromShowName",
+    toCountry: "toCountry",
+    toCity: "toCity",
+    toStreet: "toStreet",
+    toShowName: "toShowName",
+    priceAdult: 1,
+    priceUnder3: 2,
+    priceUnder10: 3,
+    priceUnder18: 4,
+  };
+  const hotel = {
+    id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    name: "HotelName",
+    country: "Country",
+    city: "City",
+    street: "Street",
+    foodPricePerPerson: 20,
+    rooms: [
+      {
+        price: 10,
+        size: 2,
+        count: 3,
+      },
+      {
+        price: 20,
+        size: 3,
+        count: 6,
+      },
+      {
+        price: 20,
+        size: 6,
+        count: 12,
+      },
+    ],
+  };
+  // calculations
+  const totalPriceForTransportFrom =
+    reservation.numberOfAdults * fromHotelTransportOption.priceAdult +
+    reservation.numberOfUnder3 * fromHotelTransportOption.priceUnder3 +
+    reservation.numberOfUnder10 * fromHotelTransportOption.priceUnder10 +
+    reservation.numberOfUnder18 * fromHotelTransportOption.priceUnder18;
+  const totalPriceForTransportTo =
+    reservation.numberOfAdults * toHotelTransportOption.priceAdult +
+    reservation.numberOfUnder3 * toHotelTransportOption.priceUnder3 +
+    reservation.numberOfUnder10 * toHotelTransportOption.priceUnder10 +
+    reservation.numberOfUnder18 * toHotelTransportOption.priceUnder18;
+  const totalPriceForTransport =
+    totalPriceForTransportFrom + totalPriceForTransportTo;
+  const hotelPrice = reservation.price - totalPriceForTransport;
+  let roomTotalPriceString = reservation.rooms
+    .map(
+      (room) =>
+        `${
+          hotel.rooms.find((hotel_room) => hotel_room.size === room.size)?.price
+        } PLN * ${room.number}`
+    )
+    .join(" + ");
+  roomTotalPriceString = `(${roomTotalPriceString})` + " x 4 nights";
+
+  const roomTotalPrice =
+    reservation.rooms
+      .map(
+        (room) =>
+          hotel.rooms.find((hotel_room) => hotel_room.size === room.size)
+            .price * room.number
+      )
+      .reduce((sum, current) => sum + current, 0) * 4;
 
   return (
     <>
@@ -16,8 +143,8 @@ function ReservationPage() {
           <div className="page-section-content">
             <div className="page-section-content-title">Date</div>
             <div className="page-section-content-content">
-              Start: 2023-01-01 <br />
-              End: 2023-01-01
+              Start: {fromHotelTransportOption.start} <br />
+              End: {toHotelTransportOption.end}
             </div>
           </div>
           <div className="page-section-content">
@@ -25,10 +152,10 @@ function ReservationPage() {
               People configuration
             </div>
             <div className="page-section-content-content">
-              Adult: 12 <br />
-              Adult: 12 <br />
-              Adult: 12 <br />
-              Adult: 12 <br />
+              Adults: {reservation.numberOfAdults} <br />
+              Kinds under 3: {reservation.numberOfUnder3} <br />
+              Kids under 10: {reservation.numberOfUnder10} <br />
+              Kids under 18: {reservation.numberOfUnder18} <br />
             </div>
           </div>
         </div>
@@ -37,30 +164,46 @@ function ReservationPage() {
             <div className="left">
               <div className="page-section-title">Transport</div>
             </div>
-            <div className="right">31231 PLN</div>
+            <div className="right">{totalPriceForTransport} PLN</div>
           </div>
           <div className="page-section-content">
-            <div className="page-section-content-title">
-              From Berlin to Gdańsk
+            <div className="two-elements">
+              <div className="left">
+                <div className="page-section-content-title">
+                  From {fromHotelTransportOption.fromCity} to{" "}
+                  {fromHotelTransportOption.toCity}
+                </div>
+              </div>
+              <div className="right page-section-content-title">
+                {totalPriceForTransportFrom} PLN
+              </div>
             </div>
             <div className="page-section-content-content">
-              Param: 2023-01-01 <br />
-              Param: 2023-01-01 <br />
-              Param: 2023-01-01 <br />
-              Param: 2023-01-01 <br />
-              Param: 2023-01-01
+              Transport type: {fromHotelTransportOption.type} <br />
+              From: {fromHotelTransportOption.fromShowName} <br />
+              To: {fromHotelTransportOption.toShowName} <br />
+              Start date: {fromHotelTransportOption.start} <br />
+              End date: {fromHotelTransportOption.end}
             </div>
           </div>
           <div className="page-section-content">
-            <div className="page-section-content-title">
-              From Gdańsk to Berlin
+            <div className="two-elements">
+              <div className="left">
+                <div className="page-section-content-title">
+                  From {toHotelTransportOption.fromCity} to{" "}
+                  {toHotelTransportOption.toCity}
+                </div>
+              </div>
+              <div className="right page-section-content-title">
+                {totalPriceForTransportTo} PLN
+              </div>
             </div>
             <div className="page-section-content-content">
-              Param: 2023-01-01 <br />
-              Param: 2023-01-01 <br />
-              Param: 2023-01-01 <br />
-              Param: 2023-01-01 <br />
-              Param: 2023-01-01
+              Transport type: {toHotelTransportOption.type} <br />
+              From: {toHotelTransportOption.fromShowName} <br />
+              To: {toHotelTransportOption.toShowName} <br />
+              Start date: {toHotelTransportOption.start} <br />
+              End date: {toHotelTransportOption.end}
             </div>
           </div>
         </div>
@@ -69,74 +212,68 @@ function ReservationPage() {
             <div className="left">
               <div className="page-section-title">Hotel</div>
             </div>
-            <div className="right">31231 PLN</div>
+            <div className="right">{hotelPrice} PLN</div>
           </div>
           <div className="page-section-content">
             <div className="page-section-content-title">Details</div>
             <div className="page-section-content-content">
-              Param: 2023-01-01 <br />
-              Param: 2023-01-01 <br />
-              Param: 2023-01-01
+              Name: {hotel.name} <br />
+              Country: {hotel.country} <br />
+              Address: address
             </div>
           </div>
           <div className="page-section-content">
-            <div className="page-section-content-title">Configuration</div>
+            <div className="page-section-content-title">Food configuration</div>
             <div className="page-section-content-content">
               <div className="user-input">
                 <div className="left">
                   <label htmlFor="food">Food</label>
                 </div>
                 <div className="right">
-                  220 PLN (per night)
-                  <input type="checkbox" name="food"></input>
+                  {hotel.foodPricePerPerson} PLN (per night)
+                  {reservation.foodIncluded ? (
+                    <Checkbox defaultChecked disabled></Checkbox>
+                  ) : (
+                    <Checkbox disabled></Checkbox>
+                  )}
                 </div>
               </div>
               <div className="user-input-result-one">
-                Rooms total: 220 PLN(per night) x 4 nights = 880 PLN
+                Food total: {hotel.foodPricePerPerson} PLN x 4 days ={" "}
+                {hotel.foodPricePerPerson * 4} PLN
               </div>
-              <div className="page-section-content-title">
-                Room configuration
-              </div>
-              <div className="user-input">
-                <div className="left">
-                  <label htmlFor="room_size_1">Size 1</label>
+            </div>
+            <div className="page-section-content-title">Room configuration</div>
+            <div className="page-section-content-content">
+              {reservation.rooms.map((item) => (
+                <div className="user-input">
+                  <div className="left">
+                    <label>Size {item.size}</label>
+                  </div>
+                  <div className="right">
+                    {hotel.rooms.find((room) => room.size === item.size)?.price}{" "}
+                    PLN (per night)
+                    <div style={{ display: "inline-block" }}>
+                      <InputNumber
+                        disabled
+                        defaultValue={item.number}
+                        style={{ width: 100 }}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="right">
-                  220 PLN (per night)
-                  <input type="text" name="room_size_1"></input>
-                </div>
-              </div>
-              <div className="user-input">
-                <div className="left">
-                  <label htmlFor="room_size_2">Size 2</label>
-                </div>
-                <div className="right">
-                  300 PLN (per night)
-                  <input type="text" name="room_size_2"></input>
-                </div>
-              </div>
-              <div className="user-input">
-                <div className="left">
-                  <label htmlFor="room_size_3">Size 3</label>
-                </div>
-                <div className="right">
-                  420 PLN (per night)
-                  <input type="text" name="room_size_3"></input>
-                </div>
-              </div>
-              <div className="user-input-result-two">
-                <div className="user-input-result-two-left">
-                  Rooms capacity: 6/6
-                </div>
-                <div className="user-input-result-two-right">
-                  Rooms total: 640 PLN(per night) x 4 nights = 2560 PLN
-                </div>
+              ))}
+            </div>
+            <div className="user-input-result-two">
+              <div className="user-input-result-two-left"></div>
+              <div className="user-input-result-two-right">
+                Rooms total: {roomTotalPriceString} = {roomTotalPrice} PLN
               </div>
             </div>
           </div>
         </div>
         <div className="two-elements">
-          <div className="left">Total: 1231231 PLN</div>
+          <div className="left">Total: {reservation.price} PLN</div>
           <div className="right">
             {page_status === "toBuy" && (
               <>
