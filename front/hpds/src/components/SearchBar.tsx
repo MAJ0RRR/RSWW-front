@@ -31,8 +31,8 @@ function SearchBar() {
 
   // handlers
   const handleDateRangePickerChange = (e) => {
-    setSearchBarData({ ...seachBarData, ["whenFrom"]: e[0] });
-    setSearchBarData({ ...seachBarData, ["whenTo"]: e[1] });
+    console.log(e);
+    setSearchBarData({ ...seachBarData, ["whenFrom"]: e[0], ["whenTo"]: e[1] });
   };
   const handleChange = (e, name: string) => {
     const value = parseInt(e);
