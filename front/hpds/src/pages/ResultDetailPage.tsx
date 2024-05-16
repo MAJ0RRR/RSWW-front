@@ -4,10 +4,10 @@ import "rsuite/dist/rsuite.min.css";
 import Button from "react-bootstrap/Button";
 import { InputNumber } from "rsuite";
 import { Checkbox } from "rsuite";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function ResultDetailPage() {
-  //mocked vairables
+  //mocked variables
   const numberOfAdults = 1;
   const numberOfUnder3 = 1;
   const numberOfUnder10 = 1;
@@ -76,6 +76,7 @@ function ResultDetailPage() {
       },
     ],
   };
+
   // calculations
   const transportFromPrice =
     numberOfAdults * fromHotelTransportOption.priceAdult +
@@ -90,12 +91,40 @@ function ResultDetailPage() {
   const totalTransportPrice = transportFromPrice + transportToPrice;
   const totalPeople =
     numberOfAdults + numberOfUnder3 + numberOfUnder10 + numberOfUnder18;
+
   const [totalRoomPriceString, setTotalRoomPriceString] = useState("");
   const [totalRoomPrice, setTotalRoomPrice] = useState(0);
-  const totalFoodPrice =
-    hotel.foodPricePerPerson * totalPeople * numberOfNights;
   const [foodIncluded, setFoodIncluded] = useState(false);
+
+  const totalFoodPrice = foodIncluded
+    ? hotel.foodPricePerPerson * totalPeople * numberOfNights
+    : 0;
+
+  const [roomPrices, setRoomPrices] = useState({});
+  const [checkedRooms, setCheckedRooms] = useState([]);
   const hotelPrice = totalFoodPrice + totalRoomPrice;
+
+  const handleRoomChange = (size, count, price) => {
+    const newRoomPrices = { ...roomPrices, [size]: count * price };
+    setRoomPrices(newRoomPrices);
+
+    const newCheckedRooms = checkedRooms.filter((room) => room.size !== size);
+    if (count > 0) {
+      newCheckedRooms.push({ size, count, total: count * price });
+    }
+    setCheckedRooms(newCheckedRooms);
+
+    const newTotalRoomPrice = Object.values(newRoomPrices).reduce(
+      (acc, curr) => acc + curr,
+      0
+    );
+    setTotalRoomPrice(newTotalRoomPrice);
+    setTotalRoomPriceString(
+      newCheckedRooms
+        .map((room) => `${room.total / room.count} PLN * ${room.count}`)
+        .join(" + ") || ""
+    );
+  };
 
   return (
     <>
@@ -117,7 +146,7 @@ function ResultDetailPage() {
             </div>
             <div className="page-section-content-content">
               Adults: {numberOfAdults} <br />
-              Kinds under 3: {numberOfUnder3} <br />
+              Kids under 3: {numberOfUnder3} <br />
               Kids under 10: {numberOfUnder10} <br />
               Kids under 18: {numberOfUnder18} <br />
             </div>
@@ -183,7 +212,7 @@ function ResultDetailPage() {
             <div className="page-section-content-content">
               Name: {hotel.name} <br />
               Country: {hotel.country} <br />
-              Address: address
+              Address: {hotel.street}, {hotel.city}, {hotel.country}
             </div>
           </div>
           <div className="page-section-content">
@@ -223,14 +252,16 @@ function ResultDetailPage() {
                     </label>
                   </div>
                   <div className="right">
-                    {item.price}
-                    PLN (per night)
+                    {item.price} PLN (per night)
                     <div style={{ display: "inline-block" }}>
                       <InputNumber
                         defaultValue={0}
                         min={0}
                         max={item.count}
                         style={{ width: 100 }}
+                        onChange={(value) =>
+                          handleRoomChange(item.size, value, item.price)
+                        }
                       />
                     </div>
                   </div>
@@ -239,10 +270,21 @@ function ResultDetailPage() {
             </div>
             <div className="user-input-result-two">
               <div className="user-input-result-two-left">
-                Rooms capacity: 6/6
+                Rooms capacity:{" "}
+                {checkedRooms.reduce(
+                  (acc, room) => acc + room.size * room.count,
+                  0
+                )}
+                /{totalPeople}
               </div>
               <div className="user-input-result-two-right">
-                Rooms total: {totalRoomPriceString} = {totalRoomPrice} PLN
+                {totalRoomPriceString.length > 0 ? (
+                  <>
+                    Rooms total: {totalRoomPriceString} = {totalRoomPrice} PLN
+                  </>
+                ) : (
+                  <> Rooms total: {totalRoomPrice} PLN</>
+                )}
               </div>
             </div>
           </div>
@@ -252,7 +294,11 @@ function ResultDetailPage() {
             Total: {hotelPrice + totalTransportPrice} PLN
           </div>
           <div className="right">
-            <Button variant="secondary" className="button-style">
+            <Button
+              variant="secondary"
+              className="button-style"
+              onClick={() => console.log(checkedRooms)}
+            >
               Reserve
             </Button>
           </div>
