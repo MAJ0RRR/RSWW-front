@@ -1,30 +1,37 @@
-import NavBarNotLoggedIn from "../components/NavBarNotLoggedIn";
-import Button from "react-bootstrap/Button";
+import NavBarLoggedIn from "../components/NavBarLoggedIn";
 import "../styles/FormStyles.css";
+import { Form, ButtonToolbar, Button, DateInput } from "rsuite";
 
 function LogInPage() {
+  const handlePayment = (formData, event) => {
+    // Tutaj dodaj kod obsługujący płatność, np. wysłanie danych do serwera
+    console.log("Płatność została przetworzona:", formData);
+    // Możesz dodać tutaj również przekierowanie lub wyświetlenie komunikatu potwierdzającego
+  };
+
   return (
     <>
-      <NavBarNotLoggedIn />
+      <NavBarLoggedIn />
       <div className="container">
         <div className="header">Log in</div>
         <div className="inputs">
-          <div className="input">
-            <input type="text" placeholder="Login" name="login" required />
-          </div>
-          <div className="input">
-            <input
-              type="password"
-              placeholder="Password"
-              name="password"
-              required
-            />
-          </div>
-        </div>
-        <div className="submit-container">
-          <div className="buttons">
-            <Button variant="secondary">Log in</Button>
-          </div>
+          <Form onSubmit={handlePayment}>
+            <Form.Group controlId="name">
+              <Form.ControlLabel>Username:</Form.ControlLabel>
+              <Form.Control name="username" />
+            </Form.Group>
+            <Form.Group controlId="password">
+              <Form.ControlLabel>Password:</Form.ControlLabel>
+              <Form.Control name="password" type="password" />
+            </Form.Group>
+            <Form.Group>
+              <ButtonToolbar>
+                <Button appearance="secondary" type="submit">
+                  Log in
+                </Button>
+              </ButtonToolbar>
+            </Form.Group>
+          </Form>
         </div>
       </div>
     </>

@@ -36,7 +36,7 @@ function PaymentPage() {
             </Form.Group>
             <Form.Group>
               <ButtonToolbar>
-                <Button appearance="primary" type="submit">
+                <Button appearance="secondary" type="submit">
                   Pay
                 </Button>
               </ButtonToolbar>

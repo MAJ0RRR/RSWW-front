@@ -26,25 +26,3 @@ body {
     margin-top: 50px;
     padding-left: 30px;
 }
-
-.input {
-    align-items: center;
-}
-
-.input input {
-    height: 40px;
-    width: 400px;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #000000;
-    padding: 20px;
-}
-
-.submit-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 40px;
-    padding-left: 40px;
-    padding-right: 40px;
-  }
