@@ -112,6 +112,11 @@ function ReservationPage() {
     reservation.numberOfUnder10 * toHotelTransportOption.priceUnder10 +
     reservation.numberOfUnder18 * toHotelTransportOption.priceUnder18;
   const totalTransportPrice = transportFromPrice + transportToPrice;
+  const totalPeople =
+    reservation.numberOfAdults +
+    reservation.numberOfUnder3 +
+    reservation.numberOfUnder10 +
+    reservation.numberOfUnder18;
   let totalRoomPriceString = reservation.rooms
     .map(
       (room) =>
@@ -134,7 +139,7 @@ function ReservationPage() {
       )
       .reduce((sum, current) => sum + current, 0) * reservation.numberOfNights;
   const totalFoodPrice = reservation.foodIncluded
-    ? hotel.foodPricePerPerson * reservation.numberOfNights
+    ? hotel.foodPricePerPerson * reservation.numberOfNights * totalPeople
     : 0;
   const hotelPrice = totalFoodPrice + totalRoomPrice;
 
@@ -235,7 +240,7 @@ function ReservationPage() {
                   <label htmlFor="food">Food</label>
                 </div>
                 <div className="right">
-                  {hotel.foodPricePerPerson} PLN (per night)
+                  {hotel.foodPricePerPerson * totalPeople} PLN (per night)
                   {reservation.foodIncluded ? (
                     <Checkbox defaultChecked disabled></Checkbox>
                   ) : (
@@ -246,7 +251,7 @@ function ReservationPage() {
               <div className="user-input-result-one">
                 {reservation.foodIncluded ? (
                   <>
-                    Food total: {hotel.foodPricePerPerson} PLN x{" "}
+                    Food total: {hotel.foodPricePerPerson * totalPeople} PLN x{" "}
                     {reservation.numberOfNights} nights = {totalFoodPrice} PLN
                   </>
                 ) : (
