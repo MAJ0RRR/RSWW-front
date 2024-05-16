@@ -29,7 +29,7 @@ function ReservationPage() {
         number: 2,
       },
     ],
-    price: 11111,
+    price: 1000,
     hotelName: "hotelName",
     hotelCity: "hotelCity",
     typeOfTransport: "Plane",
@@ -101,20 +101,18 @@ function ReservationPage() {
     ],
   };
   // calculations
-  const totalPriceForTransportFrom =
+  const transportFromPrice =
     reservation.numberOfAdults * fromHotelTransportOption.priceAdult +
     reservation.numberOfUnder3 * fromHotelTransportOption.priceUnder3 +
     reservation.numberOfUnder10 * fromHotelTransportOption.priceUnder10 +
     reservation.numberOfUnder18 * fromHotelTransportOption.priceUnder18;
-  const totalPriceForTransportTo =
+  const transportToPrice =
     reservation.numberOfAdults * toHotelTransportOption.priceAdult +
     reservation.numberOfUnder3 * toHotelTransportOption.priceUnder3 +
     reservation.numberOfUnder10 * toHotelTransportOption.priceUnder10 +
     reservation.numberOfUnder18 * toHotelTransportOption.priceUnder18;
-  const totalPriceForTransport =
-    totalPriceForTransportFrom + totalPriceForTransportTo;
-  const hotelPrice = reservation.price - totalPriceForTransport;
-  let roomTotalPriceString = reservation.rooms
+  const totalTransportPrice = transportFromPrice + transportToPrice;
+  let totalRoomPriceString = reservation.rooms
     .map(
       (room) =>
         `${
@@ -122,16 +120,23 @@ function ReservationPage() {
         } PLN * ${room.number}`
     )
     .join(" + ");
-  roomTotalPriceString = `(${roomTotalPriceString})` + " x 4 nights";
-
-  const roomTotalPrice =
+  totalRoomPriceString =
+    `(${totalRoomPriceString})` +
+    " x " +
+    `${reservation.numberOfNights}` +
+    " nights";
+  const totalRoomPrice =
     reservation.rooms
       .map(
         (room) =>
           hotel.rooms.find((hotel_room) => hotel_room.size === room.size)
             .price * room.number
       )
-      .reduce((sum, current) => sum + current, 0) * 4;
+      .reduce((sum, current) => sum + current, 0) * reservation.numberOfNights;
+  const totalFoodPrice = reservation.foodIncluded
+    ? hotel.foodPricePerPerson * reservation.numberOfNights
+    : 0;
+  const hotelPrice = totalFoodPrice + totalRoomPrice;
 
   return (
     <>
@@ -164,7 +169,7 @@ function ReservationPage() {
             <div className="left">
               <div className="page-section-title">Transport</div>
             </div>
-            <div className="right">{totalPriceForTransport} PLN</div>
+            <div className="right">{totalTransportPrice} PLN</div>
           </div>
           <div className="page-section-content">
             <div className="two-elements">
@@ -175,7 +180,7 @@ function ReservationPage() {
                 </div>
               </div>
               <div className="right page-section-content-title">
-                {totalPriceForTransportFrom} PLN
+                {transportFromPrice} PLN
               </div>
             </div>
             <div className="page-section-content-content">
@@ -195,7 +200,7 @@ function ReservationPage() {
                 </div>
               </div>
               <div className="right page-section-content-title">
-                {totalPriceForTransportTo} PLN
+                {transportToPrice} PLN
               </div>
             </div>
             <div className="page-section-content-content">
@@ -239,8 +244,14 @@ function ReservationPage() {
                 </div>
               </div>
               <div className="user-input-result-one">
-                Food total: {hotel.foodPricePerPerson} PLN x 4 days ={" "}
-                {hotel.foodPricePerPerson * 4} PLN
+                {reservation.foodIncluded ? (
+                  <>
+                    Food total: {hotel.foodPricePerPerson} PLN x{" "}
+                    {reservation.numberOfNights} nights = {totalFoodPrice} PLN
+                  </>
+                ) : (
+                  <>Food total: 0 PLN</>
+                )}
               </div>
             </div>
             <div className="page-section-content-title">Room configuration</div>
@@ -267,13 +278,15 @@ function ReservationPage() {
             <div className="user-input-result-two">
               <div className="user-input-result-two-left"></div>
               <div className="user-input-result-two-right">
-                Rooms total: {roomTotalPriceString} = {roomTotalPrice} PLN
+                Rooms total: {totalRoomPriceString} = {totalRoomPrice} PLN
               </div>
             </div>
           </div>
         </div>
         <div className="two-elements">
-          <div className="left">Total: {reservation.price} PLN</div>
+          <div className="left">
+            Total: {hotelPrice + totalTransportPrice} PLN
+          </div>
           <div className="right">
             {page_status === "toBuy" && (
               <>
