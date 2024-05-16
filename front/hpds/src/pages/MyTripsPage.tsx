@@ -1,4 +1,4 @@
-import NavBarLoggedIn from "../components/NavBarLoggedIn";
+import NavBar from "../components/NavBar";
 import "../styles/MyTripPageStyles.css";
 import Button from "react-bootstrap/Button";
 
@@ -51,7 +51,7 @@ function MyTripsPage() {
 
   return (
     <>
-      <NavBarLoggedIn />
+      <NavBar />
       <div className="page-content">
         <div className="page-title">My trips</div>
         {mocked_my_reservations.map((item) => (

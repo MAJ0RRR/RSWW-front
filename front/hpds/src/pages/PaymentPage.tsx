@@ -1,4 +1,4 @@
-import NavBarLoggedIn from "../components/NavBarLoggedIn";
+import NavBar from "../components/NavBar";
 import "../styles/FormStyles.css";
 import { Form, ButtonToolbar, Button, DateInput } from "rsuite";
 
@@ -11,7 +11,7 @@ function PaymentPage() {
 
   return (
     <>
-      <NavBarLoggedIn />
+      <NavBar />
       <div className="container">
         <div className="header">Payment</div>
         <div className="inputs">
