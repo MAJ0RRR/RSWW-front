@@ -3,6 +3,8 @@ import "../styles/FormStyles.css";
 import AuthContext, { AuthContextType } from "../context/AuthProvider";
 import { Form, ButtonToolbar, Button } from "rsuite";
 import NavBar from "../components/NavBar";
+import { API_URL, LOGIN_ENDPOINT } from "../consts/consts";
+import axiosInstance from "../axios/axiosInstance";
 
 function LogInPage() {
   const { setAuth } = useContext(AuthContext) as AuthContextType;
@@ -13,28 +15,20 @@ function LogInPage() {
 
     setError(""); // Reset error message
     try {
-      const response = await fetch("http://127.0.0.1:8000/Auth/Login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          password: formData.password,
-        }),
-        // credentials: 'include',    // CORS Policies NEED TO BE SET FOR THIS
+      const response = await axiosInstance.post(`${LOGIN_ENDPOINT}`, {
+        username: formData.username,
+        password: formData.password,
       });
-      if (response.ok) {
-        // Assuming the response contains a JSON object with a "token"
-        const data = await response.json();
+      const { token } = response.data; // Assuming the response contains a JSON object with a "token"
 
-        setAuth({ is_logged_in: true, token: data.token });
-        // TODO Redirect
+      setAuth({ is_logged_in: true, token });
+      // TODO Redirect
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        setError("Login failed. Please check your username and password.");
       } else {
-        setError("Login failed. Please try again.");
+        setError("An error occurred. Please try again later.");
       }
-    } catch (err) {
-      setError("An error occurred. Please try again later.");
     }
   };
 
