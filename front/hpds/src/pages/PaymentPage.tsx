@@ -3,7 +3,7 @@ import "../styles/FormStyles.css";
 import { Form, ButtonToolbar, Button, DateInput } from "rsuite";
 
 function PaymentPage() {
-  const handlePayment = (formData, event) => {
+  const handlePayment = (formData) => {
     // Tutaj dodaj kod obsługujący płatność, np. wysłanie danych do serwera
     console.log("Płatność została przetworzona:", formData);
     // Możesz dodać tutaj również przekierowanie lub wyświetlenie komunikatu potwierdzającego
