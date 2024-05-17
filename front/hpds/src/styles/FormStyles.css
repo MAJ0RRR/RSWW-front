@@ -8,8 +8,8 @@ body {
     margin: auto;
     margin-top: 100px;
     background-color: #FFFFFF;
-    width: 500px;
-    height: 450px;
+    width: 400px;
+    height: 480px;
 }
 
 .header {
@@ -23,36 +23,6 @@ body {
 }
 
 .inputs {
-    margin-top: 55px;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+    margin-top: 50px;
+    padding-left: 30px;
 }
-
-.input {
-    display: flex;
-    align-items: center;
-    margin: auto;
-    width: 400px;
-    height: 50px;
-    background-color: #F6F6F6;
-    border-radius: 15px;
-}
-
-.input input {
-    height: 40px;
-    width: 400px;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #000000;
-    padding: 20px;
-}
-
-.submit-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 40px;
-    padding-left: 40px;
-    padding-right: 40px;
-  }
