@@ -3,7 +3,7 @@ import "../styles/FormStyles.css";
 import { Form, ButtonToolbar, Button, DateInput } from "rsuite";
 
 function LogInPage() {
-  const handleLogin = (formData, event) => {
+  const handleLogin = (formData) => {
     // Tutaj dodaj kod obsługujący płatność, np. wysłanie danych do serwera
     console.log("Login done:", formData);
     // Możesz dodać tutaj również przekierowanie lub wyświetlenie komunikatu potwierdzającego
