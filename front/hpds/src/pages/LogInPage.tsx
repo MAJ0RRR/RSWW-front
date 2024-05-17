@@ -5,7 +5,7 @@ import { Form, ButtonToolbar, Button, DateInput } from "rsuite";
 function LogInPage() {
   const handleLogin = (formData, event) => {
     // Tutaj dodaj kod obsługujący płatność, np. wysłanie danych do serwera
-    console.log("Płatność została przetworzona:", formData);
+    console.log("Login done:", formData);
     // Możesz dodać tutaj również przekierowanie lub wyświetlenie komunikatu potwierdzającego
   };
 
@@ -26,9 +26,7 @@ function LogInPage() {
             </Form.Group>
             <Form.Group>
               <ButtonToolbar>
-                <Button appearance="secondary" type="submit">
-                  Log in
-                </Button>
+                <Button type="submit">Log in</Button>
               </ButtonToolbar>
             </Form.Group>
           </Form>
