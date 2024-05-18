@@ -3,11 +3,13 @@ import "../styles/FormStyles.css";
 import AuthContext, { AuthContextType } from "../context/AuthProvider";
 import { Form, ButtonToolbar, Button } from "rsuite";
 import NavBar from "../components/NavBar";
-import { API_URL, LOGIN_ENDPOINT } from "../consts/consts";
-import axiosInstance from "../axios/axiosInstance";
+import { LOGIN_ENDPOINT } from "../consts/consts";
+import { AxiosContextType } from "../axios/AxiosProvider";
+import AxiosContext from "../axios/AxiosProvider";
 
 function LogInPage() {
   const { setAuth } = useContext(AuthContext) as AuthContextType;
+  const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
   const [error, setError] = useState("");
 
   const handleSubmit = async (formValue: Record<string, any> | null) => {
