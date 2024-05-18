@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/FormStyles.css";
 import AuthContext, { AuthContextType } from "../context/AuthProvider";
 import { Form, ButtonToolbar, Button } from "rsuite";
@@ -11,6 +12,8 @@ function LogInPage() {
   const { setAuth } = useContext(AuthContext) as AuthContextType;
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (formValue: Record<string, any> | null) => {
     const formData = formValue as Record<string, any>; //asume it cannot be null
@@ -24,7 +27,8 @@ function LogInPage() {
       const { token } = response.data; // Assuming the response contains a JSON object with a "token"
 
       setAuth({ is_logged_in: true, token });
-      // TODO Redirect
+      const from = (location.state as any)?.from || "/";
+      navigate(from, { replace: false });
     } catch (error) {
       if (error.response && error.response.status === 400) {
         setError("Login failed. Please check your username and password.");

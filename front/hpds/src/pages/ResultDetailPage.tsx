@@ -4,9 +4,15 @@ import "rsuite/dist/rsuite.min.css";
 import Button from "react-bootstrap/Button";
 import { InputNumber } from "rsuite";
 import { Checkbox } from "rsuite";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useContext } from "react";
+import AuthContext, { AuthContextType } from "../context/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 function ResultDetailPage() {
+  const { auth } = useContext(AuthContext) as AuthContextType;
+  const navigate = useNavigate();
+
   //mocked variables
   const numberOfAdults = 1;
   const numberOfUnder3 = 1;
@@ -124,6 +130,13 @@ function ResultDetailPage() {
         .map((room) => `${room.total / room.count} PLN * ${room.count}`)
         .join(" + ") || ""
     );
+  };
+  const handleReserve = () => {
+    console.log(checkedRooms);
+    console.log(window.location.pathname);
+    if (!auth.is_logged_in) {
+      navigate("/login", { state: { from: window.location.pathname } });
+    }
   };
 
   return (
@@ -297,7 +310,7 @@ function ResultDetailPage() {
             <Button
               variant="secondary"
               className="button-style"
-              onClick={() => console.log(checkedRooms)}
+              onClick={handleReserve}
             >
               Reserve
             </Button>
