@@ -1,13 +1,21 @@
 import NavBar from "../components/NavBar";
 import "../styles/ReservationPageStyles.css";
 import "rsuite/dist/rsuite.min.css";
-import Button from "react-bootstrap/Button";
-import { InputNumber } from "rsuite";
+import { Button, InputNumber } from "rsuite";
 import { Checkbox } from "rsuite";
+import { useEffect, useState } from "react";
+import TimeLeft, { getTimeLeft, isTimeLeft } from "../utils/TimeLeft";
+import Timer from "../components/Timer";
 
 function ReservationPage() {
-  //mocked vairables
-  const page_status = "noPayment";
+  const [reservationFinalized, setReservationFinalized] = useState(false);
+  const [timeLeftForPayment, setTimeLeftForPayment] = useState<TimeLeft>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
   const reservation = {
     toHotelTransportOptionId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     fromHotelTransportOptionId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -34,9 +42,19 @@ function ReservationPage() {
     hotelCity: "hotelCity",
     typeOfTransport: "Plane",
     fromCity: "fromCity",
-    finalized: true,
-    reservedUntil: "2024-05-15T15:22:34.025Z",
+    finalized: false,
+    reservedUntil: "2024-05-18T18:54:00.025Z",
   };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeftForPayment(
+        getTimeLeft(new Date(), new Date(reservation.reservedUntil))
+      );
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [reservation.reservedUntil, timeLeftForPayment]);
+
   const fromHotelTransportOption = {
     id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     type: "Plane",
@@ -293,19 +311,24 @@ function ReservationPage() {
             Total: {hotelPrice + totalTransportPrice} PLN
           </div>
           <div className="right">
-            {page_status === "toBuy" && (
+            {!reservationFinalized && isTimeLeft(timeLeftForPayment) && (
               <>
-                Time left: 00:00
-                <Button variant="secondary" className="button-style">
-                  Buy
-                </Button>
+                <Timer
+                  minutes={timeLeftForPayment.minutes}
+                  seconds={timeLeftForPayment.seconds}
+                />
               </>
             )}
-            {page_status === "paymentDone" && (
+            {!reservationFinalized && !isTimeLeft(timeLeftForPayment) && (
+              <span style={{ color: "red" }}>No payment</span>
+            )}
+            {reservationFinalized && (
               <span style={{ color: "green" }}>Paid</span>
             )}
-            {page_status === "noPayment" && (
-              <span style={{ color: "red" }}>No payment</span>
+            {!reservationFinalized && isTimeLeft(timeLeftForPayment) && (
+              <Button variant="secondary" className="button-style">
+                Buy
+              </Button>
             )}
           </div>
         </div>
