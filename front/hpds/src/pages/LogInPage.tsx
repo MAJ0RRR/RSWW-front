@@ -20,7 +20,7 @@ function LogInPage() {
 
     setError(""); // Reset error message
     try {
-      const response = await axiosInstance.post(`${LOGIN_ENDPOINT}`, {
+      const response = await axiosInstance.post(LOGIN_ENDPOINT, {
         username: formData.username,
         password: formData.password,
       });

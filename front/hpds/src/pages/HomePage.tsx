@@ -5,9 +5,10 @@ import { AxiosContextType } from "../axios/AxiosProvider";
 import AxiosContext from "../axios/AxiosProvider";
 import React, { useState, useEffect, useContext } from "react";
 import { POPULAR_DESTINATIONS_ENDPOINT } from "../consts/consts";
+import PopularDestinationResponseType from "../responesTypes/PopularDestinationResponseType";
 
 function HomePage() {
-  const [popularDestinations, setPopularDestinations] = useState([]);
+  const [popularDestinations, setPopularDestinations] = useState<PopularDestinationResponseType[]>([]);
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -15,9 +16,7 @@ function HomePage() {
   useEffect(() => {
     const fetchPopularDestinations = async () => {
       try {
-        const response = await axiosInstance.get(
-          `${POPULAR_DESTINATIONS_ENDPOINT}`
-        );
+        const response = await axiosInstance.get<PopularDestinationResponseType[]>(POPULAR_DESTINATIONS_ENDPOINT);
         setPopularDestinations(response.data);
       } catch (err) {
         setError(err);
@@ -28,8 +27,6 @@ function HomePage() {
 
     fetchPopularDestinations();
   }, []);
-
-  if (error) return <div>Something went wrong: {error.message}</div>;
 
   return (
     <>
