@@ -1,9 +1,9 @@
-import NavBarLoggedIn from "../components/NavBarLoggedIn";
+import NavBar from "../components/NavBar";
 import "../styles/FormStyles.css";
 import { Form, ButtonToolbar, Button, DateInput } from "rsuite";
 
 function PaymentPage() {
-  const handlePayment = (formData) => {
+  const handlePayment = (formData: Record<string, any> | null) => {
     // Tutaj dodaj kod obsługujący płatność, np. wysłanie danych do serwera
     console.log("Płatność została przetworzona:", formData);
     // Możesz dodać tutaj również przekierowanie lub wyświetlenie komunikatu potwierdzającego
@@ -11,7 +11,7 @@ function PaymentPage() {
 
   return (
     <>
-      <NavBarLoggedIn />
+      <NavBar />
       <div className="container">
         <div className="header">Payment</div>
         <div className="inputs">

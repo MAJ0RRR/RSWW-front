@@ -1,4 +1,4 @@
-import NavBarLoggedIn from "../components/NavBarLoggedIn";
+import NavBar from "../components/NavBar";
 import "../styles/ReservationPageStyles.css";
 import "rsuite/dist/rsuite.min.css";
 import Button from "react-bootstrap/Button";
@@ -145,7 +145,7 @@ function ReservationPage() {
 
   return (
     <>
-      <NavBarLoggedIn />
+      <NavBar />
       <div className="page-content">
         <div className="page-title">Trip to Hotel Gołebiewski</div>
         <div className="page-section">

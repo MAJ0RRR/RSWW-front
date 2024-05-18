@@ -1,4 +1,4 @@
-import NavBarNotLoggedIn from "../components/NavBarNotLoggedIn";
+import NavBar from "../components/NavBar";
 import SearchBar from "../components/SearchBar";
 import Button from "react-bootstrap/Button";
 
@@ -13,7 +13,7 @@ function HomePage() {
 
   return (
     <>
-      <NavBarNotLoggedIn />
+      <NavBar />
       <SearchBar />
       <div className="page-content">
         <div className="page-title">Popular directions</div>

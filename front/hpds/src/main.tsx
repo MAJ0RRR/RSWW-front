@@ -9,6 +9,7 @@ import PaymentPage from "./pages/PaymentPage";
 import ReservationPage from "./pages/ReservationPage";
 import ResultDetailPage from "./pages/ResultDetailPage";
 import SearchResultPage from "./pages/SearchResultPage";
+import { AuthProvider } from "./context/AuthProvider";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>
 );
