@@ -2,14 +2,30 @@ import "../styles/SearchStyles.css";
 import "rsuite/dist/rsuite.min.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
+import AxiosContext from "../axios/AxiosProvider";
+import { AxiosContextType } from "../axios/AxiosProvider";
 import { DateRangePicker } from "rsuite";
 import { InputPicker } from "rsuite";
 import { SelectPicker } from "rsuite";
 import { InputNumber } from "rsuite";
+import { useNavigate } from "react-router-dom";
+import { TOURS_ENDPOINT } from "../consts/consts";
+import TourResponseType from "../responesTypes/TourResponseType";
+import SearchParams from "../requestsTypes/SearchParams";
 
-function SearchBar() {
+interface Props {
+  searchParams: SearchParams;
+  setSearchParams: any;
+}
+
+function SearchBar({searchParams, setSearchParams}: Props) {
   // variables
+  const navigate = useNavigate();
+  const [error, setError] = useState();
+  const [loading, setLoading] = useState(false);
+  const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
+
   const [seachBarData, setSearchBarData] = useState({
     country: "",
     city: "",
@@ -42,8 +58,20 @@ function SearchBar() {
       setSearchBarData({ ...seachBarData, [name]: 0 });
     }
   };
-  const handleSearch = () => {
-    console.log(seachBarData);
+
+  const handleSearch = async () => {
+    try {
+      const response = await axiosInstance.get<TourResponseType[]>(
+        TOURS_ENDPOINT
+      );
+      navigate("/searchresult", {
+        state: { offer: response, seachBarData: seachBarData },
+      });
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // mock data

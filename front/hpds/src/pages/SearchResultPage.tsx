@@ -1,8 +1,14 @@
 import NavBar from "../components/NavBar";
 import SearchBar from "../components/SearchBar";
 import Button from "react-bootstrap/Button";
+import { useLocation } from "react-router-dom";
+import { useState } from "react";
+import SearchParams from "../requestsTypes/SearchParams";
 
 function SearchResultPage() {
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useState(location.state.searchParams as SearchParams);
+  console.log(searchParams);
   //mocked variables
   const mocked_search_results = [
     {
@@ -31,12 +37,16 @@ function SearchResultPage() {
     },
   ];
 
+
   return (
     <>
       <NavBar />
-      <SearchBar />
+      <SearchBar
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
+      />
       <div className="page-content">
-        <div className="page-title">Holidays Poland</div>
+        <div className="page-title">Holidays {searchParams.country}</div>
         {mocked_search_results.map((item) => (
           <div className="page-section-content">
             <div className="elements">
