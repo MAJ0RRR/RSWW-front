@@ -25,7 +25,7 @@ function HomePage() {
     fromCountry: "",
     typeOfTransport: "",
     adults: 2,
-    upTo3: 0,
+    upTo3: 0, 
     upTo10: 0,
     upTo18: 0,
   });

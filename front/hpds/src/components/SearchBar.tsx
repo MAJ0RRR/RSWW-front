@@ -2,16 +2,11 @@ import "../styles/SearchStyles.css";
 import "rsuite/dist/rsuite.min.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
-import { useState, useEffect, useContext } from "react";
-import AxiosContext from "../axios/AxiosProvider";
-import { AxiosContextType } from "../axios/AxiosProvider";
 import { DateRangePicker } from "rsuite";
 import { InputPicker } from "rsuite";
 import { SelectPicker } from "rsuite";
 import { InputNumber } from "rsuite";
 import { useNavigate } from "react-router-dom";
-import { TOURS_ENDPOINT } from "../consts/consts";
-import TourResponseType from "../responesTypes/TourResponseType";
 import SearchParams from "../requestsTypes/SearchParams";
 
 interface Props {
@@ -22,24 +17,7 @@ interface Props {
 function SearchBar({searchParams, setSearchParams}: Props) {
   // variables
   const navigate = useNavigate();
-  const [error, setError] = useState();
-  const [loading, setLoading] = useState(false);
-  const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
 
-  const [seachBarData, setSearchBarData] = useState({
-    country: "",
-    city: "",
-    whenFrom: "",
-    whenTo: "",
-    howLongFrom: 7,
-    howLongTo: 10,
-    from: "",
-    typeOfTransport: "",
-    adults: 2,
-    upTo3: 0,
-    upTo10: 0,
-    upTo18: 0,
-  });
   const possibleTypesOfTransport = ["Plane", "Bus", "Own"].map((item) => ({
     label: item,
     value: item,
@@ -47,35 +25,25 @@ function SearchBar({searchParams, setSearchParams}: Props) {
 
   // handlers
   const handleDateRangePickerChange = (e) => {
-    console.log(e);
-    setSearchBarData({ ...seachBarData, ["whenFrom"]: e[0], ["whenTo"]: e[1] });
+    setSearchParams({ ...searchParams, ["whenFrom"]: e[0], ["whenTo"]: e[1] });
   };
   const handleChange = (e, name: string) => {
     const value = parseInt(e);
     if (value) {
-      setSearchBarData({ ...seachBarData, [name]: value });
+      setSearchParams({ ...searchParams, [name]: value });
     } else {
-      setSearchBarData({ ...seachBarData, [name]: 0 });
+      setSearchParams({ ...searchParams, [name]: 0 });
     }
   };
 
-  const handleSearch = async () => {
-    try {
-      const response = await axiosInstance.get<TourResponseType[]>(
-        TOURS_ENDPOINT
-      );
+  const handleSearch = () => {
       navigate("/searchresult", {
-        state: { offer: response, seachBarData: seachBarData },
+        state: { searchParams: searchParams },
       });
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
   };
 
   // mock data
-  const mocked_countries = ["Country1", "Country2", "Country3", "Country4"].map(
+  const mocked_countries = ["Poland", "Germany", "Country3", "Country4"].map(
     (item) => ({ label: item, value: item })
   );
   const mocked_cities = ["City1", "City2", "City3", "City4"].map((item) => ({
@@ -100,7 +68,7 @@ function SearchBar({searchParams, setSearchParams}: Props) {
                   data={mocked_countries}
                   style={{ width: 200 }}
                   onChange={(e) =>
-                    setSearchBarData({ ...seachBarData, ["country"]: e })
+                    setSearchParams({ ...searchParams, ["country"]: e })
                   }
                 />
               </div>
@@ -111,7 +79,7 @@ function SearchBar({searchParams, setSearchParams}: Props) {
                   data={mocked_cities}
                   style={{ width: 200 }}
                   onChange={(e) =>
-                    setSearchBarData({ ...seachBarData, ["city"]: e })
+                    setSearchParams({ ...searchParams, ["city"]: e })
                   }
                 />
               </div>
@@ -133,7 +101,7 @@ function SearchBar({searchParams, setSearchParams}: Props) {
                     id="dropdown-basic"
                     className="dropdown-button"
                   >
-                    {seachBarData.howLongFrom} - {seachBarData.howLongTo}
+                    {searchParams.howLongFrom} - {searchParams.howLongTo}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item className="list-item">
@@ -141,7 +109,7 @@ function SearchBar({searchParams, setSearchParams}: Props) {
                       <br />
                       <InputNumber
                         min={0}
-                        defaultValue={seachBarData.howLongFrom}
+                        defaultValue={searchParams.howLongFrom}
                         max={30}
                         onChange={(e) => handleChange(e, "howLongFrom")}
                       />
@@ -151,7 +119,7 @@ function SearchBar({searchParams, setSearchParams}: Props) {
                       <br />
                       <InputNumber
                         min={0}
-                        defaultValue={seachBarData.howLongTo}
+                        defaultValue={searchParams.howLongTo}
                         max={30}
                         onChange={(e) => handleChange(e, "howLongTo")}
                       />
@@ -168,7 +136,7 @@ function SearchBar({searchParams, setSearchParams}: Props) {
                   data={mocked_from}
                   style={{ width: 200 }}
                   onChange={(e) =>
-                    setSearchBarData({ ...seachBarData, ["from"]: e })
+                    setSearchParams({ ...searchParams, ["from"]: e })
                   }
                 />
               </div>
@@ -179,8 +147,8 @@ function SearchBar({searchParams, setSearchParams}: Props) {
                   data={possibleTypesOfTransport}
                   style={{ width: 200 }}
                   onChange={(e) =>
-                    setSearchBarData({
-                      ...seachBarData,
+                    setSearchParams({
+                      ...searchParams,
                       ["typeOfTransport"]: e,
                     })
                   }
@@ -195,8 +163,8 @@ function SearchBar({searchParams, setSearchParams}: Props) {
                     id="dropdown-basic"
                     className="dropdown-button"
                   >
-                    {seachBarData.adults} + {seachBarData.upTo3} +{" "}
-                    {seachBarData.upTo10} + {seachBarData.upTo18}
+                    {searchParams.adults} + {searchParams.upTo3} +{" "}
+                    {searchParams.upTo10} + {searchParams.upTo18}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item className="list-item">
@@ -204,7 +172,7 @@ function SearchBar({searchParams, setSearchParams}: Props) {
                       <br />
                       <InputNumber
                         min={0}
-                        defaultValue={seachBarData.adults}
+                        defaultValue={searchParams.adults}
                         max={20}
                         onChange={(e) => handleChange(e, "adults")}
                       />
@@ -214,7 +182,7 @@ function SearchBar({searchParams, setSearchParams}: Props) {
                       <br />
                       <InputNumber
                         min={0}
-                        defaultValue={seachBarData.upTo3}
+                        defaultValue={searchParams.upTo3}
                         max={20}
                         onChange={(e) => handleChange(e, "upTo3")}
                       />
@@ -224,7 +192,7 @@ function SearchBar({searchParams, setSearchParams}: Props) {
                       <br />
                       <InputNumber
                         min={0}
-                        defaultValue={seachBarData.upTo10}
+                        defaultValue={searchParams.upTo10}
                         max={20}
                         onChange={(e) => handleChange(e, "upTo10")}
                       />
@@ -234,7 +202,7 @@ function SearchBar({searchParams, setSearchParams}: Props) {
                       <br />
                       <InputNumber
                         min={0}
-                        defaultValue={seachBarData.upTo18}
+                        defaultValue={searchParams.upTo18}
                         max={20}
                         onChange={(e) => handleChange(e, "upTo18")}
                       />
