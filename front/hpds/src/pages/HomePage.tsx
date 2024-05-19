@@ -7,28 +7,18 @@ import { useState, useEffect, useContext } from "react";
 import { POPULAR_DESTINATIONS_ENDPOINT } from "../consts/consts";
 import PopularDestinationResponseType from "../responesTypes/PopularDestinationResponseType";
 import { useNavigate } from "react-router-dom";
-import SearchParams from "../requestsTypes/SearchParams";
+import GlobalContext, {
+  GlobalContextType,
+} from "../context/GlobalContextProvider";
 
 function HomePage() {
   const [popularDestinations, setPopularDestinations] = useState<
     PopularDestinationResponseType[]
   >([]);
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
-  const [searchParams, setSearchParams] = useState<SearchParams>({
-    country: "",
-    city: "",
-    whenFrom: null,
-    whenTo: null,
-    howLongFrom: 7,
-    howLongTo: 10,
-    fromCity: "",
-    fromCountry: "",
-    typeOfTransport: "",
-    adults: 2,
-    upTo3: 0, 
-    upTo10: 0,
-    upTo18: 0,
-  });
+  const { searchParams, setSearchParams } = useContext(
+    GlobalContext
+  ) as GlobalContextType;
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -53,10 +43,7 @@ function HomePage() {
   return (
     <>
       <NavBar />
-      <SearchBar
-        searchParams={searchParams}
-        setSearchParams={setSearchParams}
-      />
+      <SearchBar />
       <div className="page-content">
         <div className="page-title">Popular directions</div>
         {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
@@ -71,10 +58,12 @@ function HomePage() {
                     className="font-size-36"
                     onClick={() => {
                       navigate("/searchresult", {
-                        state: { searchParams: {
-                          ...searchParams,
-                          ["country"]: item.country,
-                        } },
+                        state: {
+                          searchParams: {
+                            ...searchParams,
+                            ["country"]: item.country,
+                          },
+                        },
                       });
                     }}
                   >

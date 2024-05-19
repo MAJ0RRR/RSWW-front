@@ -17,7 +17,6 @@ import {
   RESERVATION_ENDPOINT_POST,
 } from "../consts/consts";
 import HotelResponseType from "../responesTypes/HotelResponseType";
-import ReservationPost from "../requestsTypes/ReservationPost";
 
 function ResultDetailPage() {
   const { auth } = useContext(AuthContext) as AuthContextType;
@@ -91,7 +90,7 @@ function ResultDetailPage() {
       try {
         // transportOptionFrom
         const response1 = await axiosInstance.get<TransportOptionResponseType>(
-          `TransportOptions/${tour.fromHotelTransportOptionId}`,
+          TRANSPORT_OPTION_ENDPOINT + `/${tour.fromHotelTransportOptionId}`,
           {
             params: {
               fromTimeStamp: tour.dateTime,
@@ -111,8 +110,8 @@ function ResultDetailPage() {
         );
         setToHotelTransportOption(response2.data);
 
-        // // hotelInfo
-        const response = await axiosInstance.get<HotelResponseType>(
+        // hotelInfo
+        const response3 = await axiosInstance.get<HotelResponseType>(
           HOTEL_OPTION_ENDPOINT + `/${tour.hotelId}`,
           {
             params: {
@@ -120,7 +119,9 @@ function ResultDetailPage() {
             },
           }
         );
-        setHotel(response.data);
+        setHotel(response3.data);
+
+        //hotel available rooms
       } catch (err) {
         setError(err);
       } finally {

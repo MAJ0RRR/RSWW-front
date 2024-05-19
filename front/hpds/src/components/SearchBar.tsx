@@ -7,16 +7,17 @@ import { InputPicker } from "rsuite";
 import { SelectPicker } from "rsuite";
 import { InputNumber } from "rsuite";
 import { useNavigate } from "react-router-dom";
-import SearchParams from "../requestsTypes/SearchParams";
+import { useContext } from "react";
+import GlobalContext, {
+  GlobalContextType,
+} from "../context/GlobalContextProvider";
 
-interface Props {
-  searchParams: SearchParams;
-  setSearchParams: any;
-}
-
-function SearchBar({searchParams, setSearchParams}: Props) {
+function SearchBar() {
   // variables
   const navigate = useNavigate();
+  const { searchParams, setSearchParams } = useContext(
+    GlobalContext
+  ) as GlobalContextType;
 
   const possibleTypesOfTransport = ["Plane", "Bus", "Own"].map((item) => ({
     label: item,
@@ -37,9 +38,9 @@ function SearchBar({searchParams, setSearchParams}: Props) {
   };
 
   const handleSearch = () => {
-      navigate("/searchresult", {
-        state: { searchParams: searchParams },
-      });
+    navigate("/searchresult", {
+      state: { searchParams: searchParams },
+    });
   };
 
   // mock data
