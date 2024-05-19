@@ -1,7 +1,7 @@
 interface TourResponseType {
     toHotelTransportOptionId: string;
     fromHotelTransportOptionId: string;
-    hotelId: number;
+    hotelId: string;
     hotelName: string;
     hotelCity: string;
     typeOfTransport: "Bus" | "Plane" | "Own" | "";

@@ -15,9 +15,8 @@ import GlobalContext, {
 function SearchBar() {
   // variables
   const navigate = useNavigate();
-  const { searchParams, setSearchParams } = useContext(
-    GlobalContext
-  ) as GlobalContextType;
+  const { searchParams, setSearchParams, searchedParams, setSearchedParams } =
+    useContext(GlobalContext) as GlobalContextType;
 
   const possibleTypesOfTransport = ["Plane", "Bus", "Own"].map((item) => ({
     label: item,
@@ -38,9 +37,10 @@ function SearchBar() {
   };
 
   const handleSearch = () => {
-    navigate("/searchresult", {
-      state: { searchParams: searchParams },
+    setSearchedParams({
+      ...searchParams,
     });
+    navigate("/searchresult");
   };
 
   // mock data

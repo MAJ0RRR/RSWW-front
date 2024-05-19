@@ -17,12 +17,14 @@ import {
   RESERVATION_ENDPOINT_POST,
 } from "../consts/consts";
 import HotelResponseType from "../responesTypes/HotelResponseType";
+import GlobalContext, { GlobalContextType } from "../context/GlobalContextProvider";
 
 function ResultDetailPage() {
   const { auth } = useContext(AuthContext) as AuthContextType;
   const location = useLocation();
   const navigate = useNavigate();
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
+  const { searchedParams, setSearchedParams, selectedTour, setSelectedTour} = useContext(GlobalContext) as GlobalContextType;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -77,12 +79,12 @@ function ResultDetailPage() {
   });
 
   // get state information
-  const tour = location.state.tour;
-  const numberOfAdults = location.state.numberOfAdults;
-  const numberOfUnder3 = location.state.numberOfUnder3;
-  const numberOfUnder10 = location.state.numberOfUnder10;
-  const numberOfUnder18 = location.state.numberOfUnder18;
-  const numberOfNights = location.state.numberOfNights;
+  const tour = selectedTour;
+  const numberOfAdults = searchedParams.adults;
+  const numberOfUnder3 = searchedParams.upTo3;
+  const numberOfUnder10 = searchedParams.upTo10;
+  const numberOfUnder18 = searchedParams.upTo18;
+  const numberOfNights = selectedTour.numberOfNights;
 
   // get transportOptionInfo and hotelOptionInfo
   useEffect(() => {
@@ -130,7 +132,7 @@ function ResultDetailPage() {
     };
 
     fetchTourDetails();
-  }, [location.state.tour]);
+  }, [selectedTour]);
 
   if (error) {
     return (

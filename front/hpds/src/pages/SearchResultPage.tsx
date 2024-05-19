@@ -17,9 +17,14 @@ function SearchResultPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
-  const { searchParams, setSearchParams } = useContext(
-    GlobalContext
-  ) as GlobalContextType;
+  const {
+    searchParams,
+    setSearchParams,
+    searchedParams,
+    setSearchedParams,
+    selectedTour,
+    setSelectedTour,
+  } = useContext(GlobalContext) as GlobalContextType;
   const [tours, setTours] = useState<TourResponseType[]>([]);
 
   useEffect(() => {
@@ -39,16 +44,14 @@ function SearchResultPage() {
     };
 
     fetchTours();
-  }, [location.state.searchParams]);
+  }, [searchedParams]);
 
   return (
     <>
       <NavBar />
       <SearchBar />
       <div className="page-content">
-        <div className="page-title">
-          Holidays {location.state.searchParams.country}
-        </div>
+        <div className="page-title">Holidays {searchedParams.country}</div>
         {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
         {!loading && tours.length === 0 && (
           <div style={{ textAlign: "center" }}>No results</div>
@@ -77,18 +80,10 @@ function SearchResultPage() {
                     <Button
                       variant="secondary"
                       className="button-style"
-                      onClick={() =>
-                        navigate("/resultdetail", {
-                          state: {
-                            tour: item,
-                            numberOfAdults: searchParams.adults,
-                            numberOfUnder3: searchParams.upTo3,
-                            numberOfUnder10: searchParams.upTo10,
-                            numberOfUnder18: searchParams.upTo18,
-                            numberOfNights: item.numberOfNights,
-                          },
-                        })
-                      }
+                      onClick={() => {
+                        setSelectedTour(item);
+                        navigate("/resultdetail");
+                      }}
                     >
                       Check offer
                     </Button>

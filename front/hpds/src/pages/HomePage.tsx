@@ -16,9 +16,8 @@ function HomePage() {
     PopularDestinationResponseType[]
   >([]);
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
-  const { searchParams, setSearchParams } = useContext(
-    GlobalContext
-  ) as GlobalContextType;
+  const { searchParams, setSearchParams, searchedParams, setSearchedParams } =
+    useContext(GlobalContext) as GlobalContextType;
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -57,14 +56,15 @@ function HomePage() {
                     variant="secondary"
                     className="font-size-36"
                     onClick={() => {
-                      navigate("/searchresult", {
-                        state: {
-                          searchParams: {
-                            ...searchParams,
-                            ["country"]: item.country,
-                          },
-                        },
+                      setSearchParams({
+                        ...searchParams,
+                        ["country"]: item.country,
                       });
+                      setSearchedParams({
+                        ...searchParams,
+                        ["country"]: item.country,
+                      });
+                      navigate("/searchresult");
                     }}
                   >
                     Check offers
