@@ -4,84 +4,144 @@ import "rsuite/dist/rsuite.min.css";
 import Button from "react-bootstrap/Button";
 import { InputNumber } from "rsuite";
 import { Checkbox } from "rsuite";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useContext } from "react";
 import AuthContext, { AuthContextType } from "../context/AuthProvider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { AxiosContextType } from "../axios/AxiosProvider";
+import AxiosContext from "../axios/AxiosProvider";
+import TransportOptionResponseType from "../responesTypes/TransportOptionResponseType";
+import {
+  HOTEL_OPTION_ENDPOINT,
+  TRANSPORT_OPTION_ENDPOINT,
+  RESERVATION_ENDPOINT_POST,
+} from "../consts/consts";
+import HotelResponseType from "../responesTypes/HotelResponseType";
+import GlobalContext, { GlobalContextType } from "../context/GlobalContextProvider";
 
 function ResultDetailPage() {
   const { auth } = useContext(AuthContext) as AuthContextType;
+  const location = useLocation();
   const navigate = useNavigate();
+  const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
+  const { searchedParams, setSearchedParams, selectedTour, setSelectedTour} = useContext(GlobalContext) as GlobalContextType;
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  //mocked variables
-  const numberOfAdults = 1;
-  const numberOfUnder3 = 1;
-  const numberOfUnder10 = 1;
-  const numberOfUnder18 = 1;
-  const numberOfNights = 1;
-  const fromHotelTransportOption = {
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    type: "Plane",
-    start: "2024-05-15T15:24:41.210Z",
-    end: "2024-05-15T15:24:41.210Z",
-    seatsAvailable: 0,
-    fromCountry: "fromCountry",
-    fromCity: "fromCity",
-    fromStreet: "fromStreet",
-    fromShowName: "fromShowName",
-    toCountry: "toCountry",
-    toCity: "toCity",
-    toStreet: "toStreet",
-    toShowName: "toShowName",
-    priceAdult: 1,
-    priceUnder3: 2,
-    priceUnder10: 3,
-    priceUnder18: 4,
-  };
-  const toHotelTransportOption = {
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    type: "Plane",
-    start: "2024-05-15T15:24:41.210Z",
-    end: "2024-05-15T15:24:41.210Z",
-    seatsAvailable: 0,
-    fromCountry: "FromCountry",
-    fromCity: "FromCity",
-    fromStreet: "FromStreet",
-    fromShowName: "fromShowName",
-    toCountry: "toCountry",
-    toCity: "toCity",
-    toStreet: "toStreet",
-    toShowName: "toShowName",
-    priceAdult: 1,
-    priceUnder3: 2,
-    priceUnder10: 3,
-    priceUnder18: 4,
-  };
-  const hotel = {
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    name: "HotelName",
-    country: "Country",
-    city: "City",
-    street: "Street",
-    foodPricePerPerson: 20,
-    rooms: [
-      {
-        price: 10,
-        size: 2,
-        count: 3,
-      },
-      {
-        price: 20,
-        size: 3,
-        count: 6,
-      },
-      {
-        price: 20,
-        size: 6,
-        count: 12,
-      },
-    ],
-  };
+  const [fromHotelTransportOption, setFromHotelTransportOption] =
+    useState<TransportOptionResponseType>({
+      id: "",
+      type: "",
+      start: "",
+      end: "",
+      seatsAvailable: 0,
+      fromCountry: "",
+      fromCity: "",
+      fromStreet: "",
+      fromShowName: "",
+      toCountry: "",
+      toCity: "",
+      toStreet: "",
+      toShowName: "",
+      priceAdult: 0,
+      priceUnder3: 0,
+      priceUnder10: 0,
+      priceUnder18: 0,
+    });
+  const [toHotelTransportOption, setToHotelTransportOption] =
+    useState<TransportOptionResponseType>({
+      id: "",
+      type: "",
+      start: "",
+      end: "",
+      seatsAvailable: 0,
+      fromCountry: "",
+      fromCity: "",
+      fromStreet: "",
+      fromShowName: "",
+      toCountry: "",
+      toCity: "",
+      toStreet: "",
+      toShowName: "",
+      priceAdult: 0,
+      priceUnder3: 0,
+      priceUnder10: 0,
+      priceUnder18: 0,
+    });
+  const [hotel, setHotel] = useState<HotelResponseType>({
+    id: "",
+    name: "",
+    country: "",
+    city: "",
+    street: "",
+    foodPricePerPerson: 0,
+    rooms: [{ price: 0, size: 2, count: 2 }],
+  });
+
+  // get state information
+  const tour = selectedTour;
+  const numberOfAdults = searchedParams.adults;
+  const numberOfUnder3 = searchedParams.upTo3;
+  const numberOfUnder10 = searchedParams.upTo10;
+  const numberOfUnder18 = searchedParams.upTo18;
+  const numberOfNights = selectedTour.numberOfNights;
+
+  // get transportOptionInfo and hotelOptionInfo
+  useEffect(() => {
+    const fetchTourDetails = async () => {
+      try {
+        // transportOptionFrom
+        const response1 = await axiosInstance.get<TransportOptionResponseType>(
+          TRANSPORT_OPTION_ENDPOINT + `/${tour.fromHotelTransportOptionId}`,
+          {
+            params: {
+              fromTimeStamp: tour.dateTime,
+            },
+          }
+        );
+        setFromHotelTransportOption(response1.data);
+
+        // transportOptionTo
+        const response2 = await axiosInstance.get<TransportOptionResponseType>(
+          TRANSPORT_OPTION_ENDPOINT + `/${tour.toHotelTransportOptionId}`,
+          {
+            params: {
+              fromTimeStamp: tour.dateTime,
+            },
+          }
+        );
+        setToHotelTransportOption(response2.data);
+
+        // hotelInfo
+        const response3 = await axiosInstance.get<HotelResponseType>(
+          HOTEL_OPTION_ENDPOINT + `/${tour.hotelId}`,
+          {
+            params: {
+              fromTimeStamp: tour.dateTime,
+            },
+          }
+        );
+        setHotel(response3.data);
+
+        //hotel available rooms
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTourDetails();
+  }, [selectedTour]);
+
+  if (error) {
+    return (
+      <>
+        <NavBar />
+        <div className="page-content">Something went wrong</div>
+      </>
+    );
+  }
 
   // calculations
   const transportFromPrice =
@@ -131,11 +191,21 @@ function ResultDetailPage() {
         .join(" + ") || ""
     );
   };
-  const handleReserve = () => {
-    console.log(checkedRooms);
-    console.log(window.location.pathname);
+  const handleReserve = async () => {
     if (!auth.is_logged_in) {
       navigate("/login", { state: { from: window.location.pathname } });
+    } else {
+      try {
+        const response = await axiosInstance.post(
+          RESERVATION_ENDPOINT_POST,
+          {}
+        );
+        const reservationId = response.data.id;
+        console.log(reservationId);
+        navigate(`/reservation/${reservationId}`);
+      } catch (err) {
+        setError(err.message);
+      }
     }
   };
 
@@ -143,14 +213,14 @@ function ResultDetailPage() {
     <>
       <NavBar />
       <div className="page-content">
-        <div className="page-title">Trip to {hotel.name}</div>
+        <div className="page-title">Trip to {hotel?.name}</div>
         <div className="page-section">
           <div className="page-section-title">General info</div>
           <div className="page-section-content">
             <div className="page-section-content-title">Date</div>
             <div className="page-section-content-content">
-              Start: {fromHotelTransportOption.start} <br />
-              End: {toHotelTransportOption.end}
+              Start: {fromHotelTransportOption?.start} <br />
+              End: {toHotelTransportOption?.end}
             </div>
           </div>
           <div className="page-section-content">
@@ -172,46 +242,68 @@ function ResultDetailPage() {
             </div>
             <div className="right">{totalTransportPrice} PLN</div>
           </div>
-          <div className="page-section-content">
-            <div className="two-elements">
-              <div className="left">
-                <div className="page-section-content-title">
-                  From {fromHotelTransportOption.fromCity} to{" "}
-                  {fromHotelTransportOption.toCity}
+          {tour.typeOfTransport === "Own" ? (
+            <>
+              <div className="page-section-content">
+                <div className="two-elements">
+                  <div className="left">
+                    <div className="page-section-content-title">
+                      Own transport
+                    </div>
+                  </div>
+                  <div className="right page-section-content-title">
+                    {transportFromPrice} PLN
+                  </div>
+                </div>
+                <div className="page-section-content-content">
+                  Buyer is responsible for organizing transport on his own.
                 </div>
               </div>
-              <div className="right page-section-content-title">
-                {transportFromPrice} PLN
-              </div>
-            </div>
-            <div className="page-section-content-content">
-              Transport type: {fromHotelTransportOption.type} <br />
-              From: {fromHotelTransportOption.fromShowName} <br />
-              To: {fromHotelTransportOption.toShowName} <br />
-              Start date: {fromHotelTransportOption.start} <br />
-              End date: {fromHotelTransportOption.end}
-            </div>
-          </div>
-          <div className="page-section-content">
-            <div className="two-elements">
-              <div className="left">
-                <div className="page-section-content-title">
-                  From {toHotelTransportOption.fromCity} to{" "}
-                  {toHotelTransportOption.toCity}
+            </>
+          ) : (
+            <>
+              <div className="page-section-content">
+                <div className="two-elements">
+                  <div className="left">
+                    <div className="page-section-content-title">
+                      From {fromHotelTransportOption?.fromCity} to{" "}
+                      {fromHotelTransportOption?.toCity}
+                    </div>
+                  </div>
+                  <div className="right page-section-content-title">
+                    {transportFromPrice} PLN
+                  </div>
+                </div>
+                <div className="page-section-content-content">
+                  Transport type: {fromHotelTransportOption?.type} <br />
+                  From: {fromHotelTransportOption?.fromShowName} <br />
+                  To: {fromHotelTransportOption?.toShowName} <br />
+                  Start date: {fromHotelTransportOption?.start} <br />
+                  End date: {fromHotelTransportOption?.end}
                 </div>
               </div>
-              <div className="right page-section-content-title">
-                {transportToPrice} PLN
+              <div className="page-section-content">
+                <div className="two-elements">
+                  <div className="left">
+                    <div className="page-section-content-title">
+                      From {toHotelTransportOption?.fromCity} to{" "}
+                      {toHotelTransportOption?.toCity}
+                    </div>
+                  </div>
+                  <div className="right page-section-content-title">
+                    {transportToPrice} PLN
+                  </div>
+                </div>
+                <div className="page-section-content-content">
+                  Transport type: {toHotelTransportOption?.type} <br />
+                  From: {toHotelTransportOption?.fromShowName} <br />
+                  To: {toHotelTransportOption?.toShowName} <br />
+                  Start date: {toHotelTransportOption?.start} <br />
+                  End date: {toHotelTransportOption?.end}
+                </div>
               </div>
-            </div>
-            <div className="page-section-content-content">
-              Transport type: {toHotelTransportOption.type} <br />
-              From: {toHotelTransportOption.fromShowName} <br />
-              To: {toHotelTransportOption.toShowName} <br />
-              Start date: {toHotelTransportOption.start} <br />
-              End date: {toHotelTransportOption.end}
-            </div>
-          </div>
+            </>
+          )}
         </div>
         <div className="page-section">
           <div className="two-elements">
@@ -223,9 +315,9 @@ function ResultDetailPage() {
           <div className="page-section-content">
             <div className="page-section-content-title">Details</div>
             <div className="page-section-content-content">
-              Name: {hotel.name} <br />
-              Country: {hotel.country} <br />
-              Address: {hotel.street}, {hotel.city}, {hotel.country}
+              Name: {hotel?.name} <br />
+              Country: {hotel?.country} <br />
+              Address: {hotel?.street}, {hotel?.city}, {hotel?.country}
             </div>
           </div>
           <div className="page-section-content">

@@ -10,6 +10,7 @@ import ReservationPage from "./pages/ReservationPage";
 import ResultDetailPage from "./pages/ResultDetailPage";
 import SearchResultPage from "./pages/SearchResultPage";
 import { AuthProvider } from "./context/AuthProvider";
+import { GlobalContextProvider } from "./context/GlobalContextProvider";
 import { AxiosProvider } from "./axios/AxiosProvider";
 
 const router = createBrowserRouter([
@@ -46,10 +47,12 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <AuthProvider>
-      <AxiosProvider>
-        <RouterProvider router={router} />
-      </AxiosProvider>
-    </AuthProvider>
+    <GlobalContextProvider>
+      <AuthProvider>
+        <AxiosProvider>
+          <RouterProvider router={router} />
+        </AxiosProvider>
+      </AuthProvider>
+    </GlobalContextProvider>
   </React.StrictMode>
 );
