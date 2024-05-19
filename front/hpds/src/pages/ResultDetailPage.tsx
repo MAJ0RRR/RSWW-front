@@ -17,14 +17,18 @@ import {
   RESERVATION_ENDPOINT_POST,
 } from "../consts/consts";
 import HotelResponseType from "../responesTypes/HotelResponseType";
-import GlobalContext, { GlobalContextType } from "../context/GlobalContextProvider";
+import GlobalContext, {
+  GlobalContextType,
+} from "../context/GlobalContextProvider";
+import HotelRoomsAvailabiltyResponseType from "../responesTypes/HotelRoomsAvailabilityResponseType";
 
 function ResultDetailPage() {
   const { auth } = useContext(AuthContext) as AuthContextType;
   const location = useLocation();
   const navigate = useNavigate();
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
-  const { searchedParams, setSearchedParams, selectedTour, setSelectedTour} = useContext(GlobalContext) as GlobalContextType;
+  const { searchedParams, setSearchedParams, selectedTour, setSelectedTour } =
+    useContext(GlobalContext) as GlobalContextType;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -77,6 +81,8 @@ function ResultDetailPage() {
     foodPricePerPerson: 0,
     rooms: [{ price: 0, size: 2, count: 2 }],
   });
+  const [hotelAvailableRooms, setHotelAvailableRooms] =
+    useState<HotelRoomsAvailabiltyResponseType>({ rooms: [] });
 
   // get state information
   const tour = selectedTour;
@@ -124,6 +130,17 @@ function ResultDetailPage() {
         setHotel(response3.data);
 
         //hotel available rooms
+        const response4 =
+          await axiosInstance.get<HotelRoomsAvailabiltyResponseType>(
+            HOTEL_OPTION_ENDPOINT + `/${tour.hotelId}` + "/RoomsAvailability",
+            {
+              params: {
+                startDate: "",
+                endDate: "",
+              },
+            }
+          );
+        setHotelAvailableRooms(response4.data);
       } catch (err) {
         setError(err);
       } finally {
@@ -349,7 +366,7 @@ function ResultDetailPage() {
             </div>
             <div className="page-section-content-title">Room configuration</div>
             <div className="page-section-content-content">
-              {hotel.rooms.map((item) => (
+              {hotelAvailableRooms.rooms.map((item) => (
                 <div className="user-input">
                   <div className="left">
                     <label>
