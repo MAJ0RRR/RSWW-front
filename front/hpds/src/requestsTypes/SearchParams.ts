@@ -1,8 +1,8 @@
 interface SearchParams {
     country: string;
     city: string;
-    whenFrom: Date | null;
-    whenTo: Date | null;
+    whenFrom: string | "";
+    whenTo: string | "";
     howLongFrom: number;
     howLongTo: number;
     fromCity: string;

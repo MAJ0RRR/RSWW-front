@@ -147,13 +147,24 @@ function SearchBar() {
             </div>
             <div className="search-input-group">
               <div className="search-input-field">
-                <label htmlFor="inputField1">From:</label>
+                <label htmlFor="inputField1">From Country:</label>
                 <br />
                 <SelectPicker
                   data={mocked_from}
                   style={{ width: 200 }}
                   onChange={(e) =>
-                    setSearchParams({ ...searchParams, ["from"]: e })
+                    setSearchParams({ ...searchParams, ["fromCountry"]: e })
+                  }
+                />
+              </div>
+              <div className="search-input-field">
+                <label htmlFor="inputField1">From City:</label>
+                <br />
+                <SelectPicker
+                  data={mocked_from}
+                  style={{ width: 200 }}
+                  onChange={(e) =>
+                    setSearchParams({ ...searchParams, ["fromCity"]: e })
                   }
                 />
               </div>

@@ -222,7 +222,7 @@ function ResultDetailPage() {
           numberOfUnder3: numberOfUnder3,
           numberOfUnder10: numberOfUnder10,
           numberOfUnder18: numberOfUnder18,
-          dateTime: new Date(), //TODO change to null
+          dateTime: "",
           numberOfNights: numberOfNights,
           foodIncluded: foodIncluded,
           rooms: [],

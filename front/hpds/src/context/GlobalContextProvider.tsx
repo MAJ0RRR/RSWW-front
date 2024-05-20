@@ -21,8 +21,8 @@ export const GlobalContextProvider = ({
   const [searchParams, setSearchParams] = useState<SearchParams>({
     country: "",
     city: "",
-    whenFrom: null,
-    whenTo: null,
+    whenFrom: "",
+    whenTo: "",
     howLongFrom: 7,
     howLongTo: 10,
     fromCity: "",
@@ -36,8 +36,8 @@ export const GlobalContextProvider = ({
   const [searchedParams, setSearchedParams] = useState<SearchParams>({
     country: "",
     city: "",
-    whenFrom: null,
-    whenTo: null,
+    whenFrom: "",
+    whenTo: "",
     howLongFrom: 7,
     howLongTo: 10,
     fromCity: "",

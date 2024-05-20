@@ -10,6 +10,7 @@ import AxiosContext from "../axios/AxiosProvider";
 import GlobalContext, {
   GlobalContextType,
 } from "../context/GlobalContextProvider";
+import ToursGet from "../requestsTypes/ToursGet";
 
 function SearchResultPage() {
   const location = useLocation();
@@ -30,9 +31,20 @@ function SearchResultPage() {
   useEffect(() => {
     const fetchTours = async () => {
       try {
+        const dataToSend = {
+          numberOfPeople: searchedParams.adults + searchedParams.upTo3 + searchedParams.upTo10 + searchedParams.upTo18,
+          fromCity: searchedParams.fromCity,
+          fromCountry: searchedParams.fromCountry,
+          toCountry: searchedParams.country,
+          toCity: searchedParams.city,
+          minStart: searchedParams.whenFrom,
+          maxEnd: searchedParams.whenTo,
+          minDuration: searchedParams.howLongFrom,
+          maxDuration: searchedParams.howLongTo,
+        } as ToursGet;
         const response = await axiosInstance.get<TourResponseType[]>(
           TOURS_ENDPOINT,
-          { params: searchParams }
+          { params: dataToSend }
         );
         setTours(response.data);
       } catch (err) {
@@ -51,7 +63,11 @@ function SearchResultPage() {
       <SearchBar />
       <div className="page-content">
         <div className="page-title">Holidays {searchedParams.country}</div>
-        {error && <div style={{textAlign: "center", color: "red"}}>Error: {error}</div>}
+        {error && (
+          <div style={{ textAlign: "center", color: "red" }}>
+            Error: {error}
+          </div>
+        )}
         {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
         {!loading && tours.length === 0 && (
           <div style={{ textAlign: "center" }}>No results</div>
