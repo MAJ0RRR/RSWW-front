@@ -13,7 +13,7 @@ interface ReservationResponseType {
   numberOfUnder3: number,
   numberOfUnder10: number,
   numberOfUnder18: number,
-  dateTime: Date,
+  dateTime: string,
   numberOfNights: number,
   foodIncluded: boolean,
   rooms: Rooms[],
@@ -23,8 +23,8 @@ interface ReservationResponseType {
   typeOfTransport: string,
   fromCity: string,
   finalized: boolean,
-  reservedUntil: Date,
-  cancellationDate: Date
+  reservedUntil: string,
+  cancellationDate: string
 } 
 
 export default ReservationResponseType;

@@ -28,7 +28,7 @@ const router = createBrowserRouter([
     element: <MyTripsPage />,
   },
   {
-    path: "/payment",
+    path: "/payment/:reservationid",
     element: <PaymentPage />,
   },
   {

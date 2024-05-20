@@ -23,7 +23,6 @@ function ReservationPage() {
   const navigate = useNavigate();
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
-  const [reservationFinalized, setReservationFinalized] = useState(false);
   const [timeLeftForPayment, setTimeLeftForPayment] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -40,7 +39,7 @@ function ReservationPage() {
     numberOfUnder3: 0,
     numberOfUnder10: 0,
     numberOfUnder18: 0,
-    dateTime: new Date(),
+    dateTime: "",
     numberOfNights: 0,
     foodIncluded: false,
     rooms: [],
@@ -50,8 +49,8 @@ function ReservationPage() {
     typeOfTransport: "",
     fromCity: "",
     finalized: false,
-    reservedUntil: new Date(),
-    cancellationDate: new Date(),
+    reservedUntil: "",
+    cancellationDate: "",
   });
   const [fromHotelTransportOption, setFromHotelTransportOption] =
     useState<TransportOptionResponseType>({
@@ -138,14 +137,16 @@ function ReservationPage() {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     setTimeLeftForPayment(
-  //       getTimeLeft(new Date(), new Date(reservation.reservedUntil))
-  //     );
-  //   }, 1000);
-  //   return () => clearInterval(timer);
-  // }, [reservation.reservedUntil, timeLeftForPayment]);
+  useEffect(() => {
+    if (!reservation.finalized) {
+      const timer = setInterval(() => {
+        setTimeLeftForPayment(
+          getTimeLeft(new Date(), new Date(reservation.reservedUntil))
+        );
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [reservation.reservedUntil, timeLeftForPayment]);
 
   // calculations
   const transportFromPrice =
@@ -340,7 +341,7 @@ function ReservationPage() {
             Total: {hotelPrice + totalTransportPrice} PLN
           </div>
           <div className="right">
-            {!reservationFinalized && isTimeLeft(timeLeftForPayment) && (
+            {!reservation.finalized && isTimeLeft(timeLeftForPayment) && (
               <>
                 <Timer
                   minutes={timeLeftForPayment.minutes}
@@ -348,14 +349,17 @@ function ReservationPage() {
                 />
               </>
             )}
-            {!reservationFinalized && !isTimeLeft(timeLeftForPayment) && (
+            {reservation.finalized && reservation.cancellationDate && (
               <span style={{ color: "red" }}>No payment</span>
             )}
-            {reservationFinalized && (
+            {reservation.finalized && !reservation.cancellationDate && (
               <span style={{ color: "green" }}>Paid</span>
             )}
-            {!reservationFinalized && isTimeLeft(timeLeftForPayment) && (
-              <Button className="button-style" onClick={() => navigate("/payment", {state: {reservationId: reservationId}})}>
+            {!reservation.finalized && isTimeLeft(timeLeftForPayment) && (
+              <Button
+                className="button-style"
+                onClick={() => navigate(`/payment/${reservationId}`)}
+              >
                 Buy
               </Button>
             )}

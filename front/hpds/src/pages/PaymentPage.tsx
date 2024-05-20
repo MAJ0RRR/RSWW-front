@@ -8,16 +8,62 @@ import ReservationBuy from "../requestsTypes/ReservationBuy";
 import { AxiosContextType } from "../axios/AxiosProvider";
 import AxiosContext from "../axios/AxiosProvider";
 import { RESERVATION_ENDPOINT } from "../consts/consts";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import ReservationResponseType from "../responesTypes/ReservationResponseType";
 
 function PaymentPage() {
-  const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
-  const [error, setError] = useState<string>("");
-  const [loading, setLoading] = useState(false);
-  const location = useLocation();
+  const reservationId = useParams();
   const navigate = useNavigate();
+  const [reservation, setReservation] = useState<ReservationResponseType>({
+    id: "",
+    toHotelTransportOptionId: "",
+    fromHotelTransportOptionId: "",
+    hotelId: "",
+    numberOfAdults: 0,
+    numberOfUnder3: 0,
+    numberOfUnder10: 0,
+    numberOfUnder18: 0,
+    dateTime: "",
+    numberOfNights: 0,
+    foodIncluded: false,
+    rooms: [],
+    price: 0,
+    hotelName: "",
+    hotelCity: "",
+    typeOfTransport: "",
+    fromCity: "",
+    finalized: false,
+    reservedUntil: "",
+    cancellationDate: "",
+  });
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [timeLeftForPayment, setTimeLeftForPayment] = useState<TimeLeft>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+  const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
 
-  const handlePayment = async (formData: Record<string, any>) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // get reservation 
+        const response = await axiosInstance.get<ReservationResponseType>(
+          RESERVATION_ENDPOINT + `/${reservationId}`
+        );
+        setReservation(response.data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handlePayment = async (formData) => {
     setLoading(true);
     const dataToSend = {
       creditCardNumber: formData.creditCardNumber,
@@ -26,11 +72,11 @@ function PaymentPage() {
     } as ReservationBuy;
     try {
       const response = await axiosInstance.post(
-        RESERVATION_ENDPOINT + `/${location.state.reservationId}` + "/Buy",
+        RESERVATION_ENDPOINT + `/${reservationId}` + "/Buy",
         { ...dataToSend }
       );
       if (response.data === true) {
-        navigate(`/reservation/${location.state.reservationId}`);
+        navigate(`/reservation/${reservationId}`);
       } else {
         setError("Lack of funds / expired card / incorrect data");
       }
@@ -41,23 +87,16 @@ function PaymentPage() {
     }
   };
 
-  const reservation = {
-    reservedUntil: "2024-05-18T19:09:30.025Z",
-  };
-
-  const [reservationFinalized, setReservationFinalized] = useState(false);
-  const [timeLeftForPayment, setTimeLeftForPayment] = useState<TimeLeft>(
-    getTimeLeft(new Date(), new Date(reservation.reservedUntil))
-  );
-
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     setTimeLeftForPayment(
-  //       getTimeLeft(new Date(), new Date(reservation.reservedUntil))
-  //     );
-  //   }, 1000);
-  //   return () => clearInterval(timer);
-  // }, [reservation.reservedUntil, timeLeftForPayment]);
+  useEffect(() => {
+    if (!reservation.finalized) {
+      const timer = setInterval(() => {
+        setTimeLeftForPayment(
+          getTimeLeft(new Date(), new Date(reservation.reservedUntil))
+        );
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [reservation.reservedUntil, timeLeftForPayment]);
 
   return (
     <>
@@ -85,17 +124,12 @@ function PaymentPage() {
               <Form.Control name="securityNumber" />
             </Form.Group>
             <Form.Group>
-              {!reservationFinalized && isTimeLeft(timeLeftForPayment) && (
+              {!reservation.finalized && isTimeLeft(timeLeftForPayment) && (
                 <ButtonToolbar>
                   <Button type="submit">Pay</Button>
                 </ButtonToolbar>
               )}
-              {!reservationFinalized && !isTimeLeft(timeLeftForPayment) && (
-                <ButtonToolbar>
-                  <Button type="submit">Pay</Button>
-                </ButtonToolbar>
-              )}
-              {!reservationFinalized && (
+              {!reservation.finalized && (
                 <Timer
                   minutes={timeLeftForPayment.minutes}
                   seconds={timeLeftForPayment.seconds}

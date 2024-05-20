@@ -29,7 +29,6 @@ function SearchResultPage() {
 
   useEffect(() => {
     const fetchTours = async () => {
-      console.log("USEEFECT WORKED");
       try {
         const response = await axiosInstance.get<TourResponseType[]>(
           TOURS_ENDPOINT,
@@ -52,6 +51,7 @@ function SearchResultPage() {
       <SearchBar />
       <div className="page-content">
         <div className="page-title">Holidays {searchedParams.country}</div>
+        {error && <div style={{textAlign: "center", color: "red"}}>Error: {error}</div>}
         {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
         {!loading && tours.length === 0 && (
           <div style={{ textAlign: "center" }}>No results</div>
