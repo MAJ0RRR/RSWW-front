@@ -14,13 +14,14 @@ import TransportOptionResponseType from "../responesTypes/TransportOptionRespons
 import {
   HOTEL_OPTION_ENDPOINT,
   TRANSPORT_OPTION_ENDPOINT,
-  RESERVATION_ENDPOINT_POST,
+  RESERVATION_ENDPOINT,
 } from "../consts/consts";
 import HotelResponseType from "../responesTypes/HotelResponseType";
 import GlobalContext, {
   GlobalContextType,
 } from "../context/GlobalContextProvider";
 import HotelRoomsAvailabiltyResponseType from "../responesTypes/HotelRoomsAvailabilityResponseType";
+import ReservationPost from "../requestsTypes/ReservationPost";
 
 function ResultDetailPage() {
   const { auth } = useContext(AuthContext) as AuthContextType;
@@ -213,12 +214,24 @@ function ResultDetailPage() {
       navigate("/login", { state: { from: window.location.pathname } });
     } else {
       try {
-        const response = await axiosInstance.post(
-          RESERVATION_ENDPOINT_POST,
-          {}
-        );
+        const dataToSend = {
+          toHotelTransportOptionId: toHotelTransportOption.id,
+          fromHotelTransportOptionId: fromHotelTransportOption.id,
+          hotelId: hotel.id,
+          numberOfAdults: numberOfAdults,
+          numberOfUnder3: numberOfUnder3,
+          numberOfUnder10: numberOfUnder10,
+          numberOfUnder18: numberOfUnder18,
+          dateTime: new Date(), //TODO change to null
+          numberOfNights: numberOfNights,
+          foodIncluded: foodIncluded,
+          rooms: [],
+        } as ReservationPost;
+        const response = await axiosInstance.post(RESERVATION_ENDPOINT, {
+          ...dataToSend,
+        });
+        console.log(dataToSend);
         const reservationId = response.data.id;
-        console.log(reservationId);
         navigate(`/reservation/${reservationId}`);
       } catch (err) {
         setError(err.message);
@@ -416,13 +429,21 @@ function ResultDetailPage() {
             Total: {hotelPrice + totalTransportPrice} PLN
           </div>
           <div className="right">
-            <Button
-              variant="secondary"
-              className="button-style"
-              onClick={handleReserve}
-            >
-              Reserve
-            </Button>
+            {error ? (
+              <div>
+                You cannot reserve, because there are no available resources.
+              </div>
+            ) : (
+              <>
+                <Button
+                  variant="secondary"
+                  className="button-style"
+                  onClick={handleReserve}
+                >
+                  Reserve
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>

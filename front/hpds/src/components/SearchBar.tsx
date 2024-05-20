@@ -40,6 +40,22 @@ function SearchBar() {
     setSearchedParams({
       ...searchParams,
     });
+    setSearchParams({
+      ...searchParams,
+      ["country"]: "",
+      ["city"]: "",
+      ["whenFrom"]: null,
+      ["whenTo"]: null,
+      ["howLongFrom"]: 7,
+      ["howLongTo"]: 10,
+      ["fromCity"]: "",
+      ["fromCountry"]: "",
+      ["typeOfTransport"]: "",
+      ["adults"]: 2,
+      ["upTo3"]: 0,
+      ["upTo10"]: 0,
+      ["upTo18"]: 0,
+    });
     navigate("/searchresult");
   };
 
