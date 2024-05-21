@@ -40,23 +40,29 @@ function MyTripsPage() {
     fetchData();
   }, []);
 
-  // turn on timer
   useEffect(() => {
-    myReservations.forEach((reservation) => {
-      if (!reservation.finalized) {
-        const timer = setInterval(() => {
-          setTimeLeftForPayment((prevTimeLeft) => ({
-            ...prevTimeLeft,
-            [reservation.id]: getTimeLeft(
-              new Date(),
-              new Date(reservation.reservedUntil)
-            ),
-          }));
-        }, 1000);
-        return () => clearInterval(timer);
-      }
-    });
-  }, [timeLeftForPayment]);
+    if (myReservations.length > 0) {
+      console.log("MYRESERVATION");
+      console.log(myReservations);
+      const timers = myReservations
+        .filter((reservation) => !reservation.finalized)
+        .map((reservation) => {
+          return setInterval(() => {
+            setTimeLeftForPayment((prevTimeLeft) => ({
+              ...prevTimeLeft,
+              [reservation.id]: getTimeLeft(
+                new Date(),
+                new Date(reservation.reservedUntil)
+              ),
+            }));
+          }, 1000);
+        });
+
+      return () => {
+        timers.forEach(clearInterval);
+      };
+    }
+  }, [myReservations, timeLeftForPayment]);
 
   const getStatusStyle = (reservation: ReservationResponseType) => {
     if (reservation.cancellationDate && reservation.finalized) {
@@ -84,7 +90,9 @@ function MyTripsPage() {
         <div className="page-title">My trips</div>
         {error && <div>Error occured</div>}
         {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
-        {!loading && myReservations.length === 0 && <div style={{textAlign: "center"}}>No trips</div>}
+        {!loading && myReservations.length === 0 && (
+          <div style={{ textAlign: "center" }}>No trips</div>
+        )}
         {!loading && myReservations.length > 0 && (
           <>
             {myReservations.map((item) => (
@@ -108,11 +116,11 @@ function MyTripsPage() {
                   </div>
                   <div className="right-50-relative">
                     <div className="bottom-right">
-                      {determineStatus(item) === "No reservation" && (
+                      {determineStatus(item) === "No reservation" && timeLeftForPayment[item.id] && (
                         <span style={{ fontSize: "24px" }}>
                           <Timer
-                            minutes={timeLeftForPayment[item.id]?.minutes}
-                            seconds={timeLeftForPayment[item.id]?.seconds}
+                            minutes={timeLeftForPayment[item.id].minutes ? timeLeftForPayment[item.id].minutes : 0}
+                            seconds={timeLeftForPayment[item.id].seconds ? timeLeftForPayment[item.id].seconds : 0}
                           />
                         </span>
                       )}

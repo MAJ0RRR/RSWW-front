@@ -6,7 +6,7 @@ import { Checkbox } from "rsuite";
 import { useContext, useEffect, useState } from "react";
 import TimeLeft, { getTimeLeft, isTimeLeft } from "../utils/TimeLeft";
 import Timer from "../components/Timer";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ReservationResponseType from "../responesTypes/ReservationResponseType";
 import TransportOptionResponseType from "../responesTypes/TransportOptionResponseType";
 import HotelResponseType from "../responesTypes/HotelResponseType";
@@ -21,6 +21,7 @@ import AxiosContext from "../axios/AxiosProvider";
 function ReservationPage() {
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
   const navigate = useNavigate();
+  const location = useLocation();
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [timeLeftForPayment, setTimeLeftForPayment] = useState<TimeLeft>({
@@ -30,7 +31,6 @@ function ReservationPage() {
     seconds: 0,
   });
   const { reservationId } = useParams();
-  console.log(reservationId);
   const [reservation, setReservation] = useState<ReservationResponseType>({
     id: "",
     toHotelTransportOptionId: "",
@@ -102,32 +102,41 @@ function ReservationPage() {
     foodPricePerPerson: 0,
     rooms: [],
   });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         // get reservation data
-        const response = await axiosInstance.get<ReservationResponseType>(
-          RESERVATION_ENDPOINT + `/${reservationId}`
-        );
-        setReservation(response.data);
+        const reservationResponse =
+          await axiosInstance.get<ReservationResponseType>(
+            RESERVATION_ENDPOINT + `/${reservationId}`
+          );
+        const reservationData = reservationResponse.data;
 
-        // get transportoption data
-        const response1 = await axiosInstance.get<TransportOptionResponseType>(
-          TRANSPORT_OPTION_ENDPOINT +
-            `/${reservation.fromHotelTransportOptionId}`
-        );
-        setFromHotelTransportOption(response1.data);
+        // get transportoption data and hotel data in parallel
+        const [
+          fromHotelTransportOptionResponse,
+          toHotelTransportOptionResponse,
+          hotelResponse,
+        ] = await Promise.all([
+          axiosInstance.get<TransportOptionResponseType>(
+            TRANSPORT_OPTION_ENDPOINT +
+              `/${reservationData.fromHotelTransportOptionId}`
+          ),
+          axiosInstance.get<TransportOptionResponseType>(
+            TRANSPORT_OPTION_ENDPOINT +
+              `/${reservationData.toHotelTransportOptionId}`
+          ),
+          axiosInstance.get<HotelResponseType>(
+            HOTEL_OPTION_ENDPOINT + `/${reservationData.hotelId}`
+          ),
+        ]);
 
-        const response2 = await axiosInstance.get<TransportOptionResponseType>(
-          TRANSPORT_OPTION_ENDPOINT + `/${reservation.toHotelTransportOptionId}`
-        );
-        setToHotelTransportOption(response2.data);
-
-        // get hotel data
-        const response3 = await axiosInstance.get<HotelResponseType>(
-          HOTEL_OPTION_ENDPOINT + `/${reservation.hotelId}`
-        );
-        setHotel(response3.data);
+        // set all states at once
+        setReservation(reservationData);
+        setFromHotelTransportOption(fromHotelTransportOptionResponse.data);
+        setToHotelTransportOption(toHotelTransportOptionResponse.data);
+        setHotel(hotelResponse.data);
       } catch (err) {
         setError(err);
       } finally {
@@ -179,14 +188,18 @@ function ReservationPage() {
     " x " +
     `${reservation.numberOfNights}` +
     " nights";
+
   const totalRoomPrice =
-    reservation.rooms
-      .map(
-        (room) =>
-          hotel.rooms.find((hotel_room) => hotel_room.size === room.size)
-            .price * room.number
-      )
-      .reduce((sum, current) => sum + current, 0) * reservation.numberOfNights;
+    reservation.rooms.length > 0
+      ? reservation.rooms
+          .map(
+            (room) =>
+              hotel.rooms.find((hotel_room) => hotel_room.size === room.size)
+                .price * room.number
+          )
+          .reduce((sum, current) => sum + current, 0) *
+        reservation.numberOfNights
+      : 0;
   const totalFoodPrice = reservation.foodIncluded
     ? hotel.foodPricePerPerson * reservation.numberOfNights * totalPeople
     : 0;

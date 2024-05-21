@@ -243,8 +243,6 @@ function ResultDetailPage() {
         if (response.status === 400) {
           navigate("/");
         } else {
-          console.log(response);
-          console.log(`/reservation/${response.data.id}`);
           navigate(`/reservation/${response.data.id}`);
         }
       } catch (err) {

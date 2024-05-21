@@ -8,12 +8,12 @@ import ReservationBuy from "../requestsTypes/ReservationBuy";
 import { AxiosContextType } from "../axios/AxiosProvider";
 import AxiosContext from "../axios/AxiosProvider";
 import { RESERVATION_ENDPOINT } from "../consts/consts";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ReservationResponseType from "../responesTypes/ReservationResponseType";
 
 function PaymentPage() {
-  const reservationId = useParams();
   const navigate = useNavigate();
+  const { reservationId } = useParams();
   const [reservation, setReservation] = useState<ReservationResponseType>({
     id: "",
     toHotelTransportOptionId: "",
@@ -49,7 +49,7 @@ function PaymentPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // get reservation 
+        // get reservation
         const response = await axiosInstance.get<ReservationResponseType>(
           RESERVATION_ENDPOINT + `/${reservationId}`
         );
