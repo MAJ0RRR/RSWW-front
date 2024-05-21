@@ -28,11 +28,11 @@ const router = createBrowserRouter([
     element: <MyTripsPage />,
   },
   {
-    path: "/payment",
+    path: "/payment/:reservationId",
     element: <PaymentPage />,
   },
   {
-    path: "/reservation",
+    path: "/reservation/:reservationId",
     element: <ReservationPage />,
   },
   {
@@ -42,7 +42,7 @@ const router = createBrowserRouter([
   {
     path: "/searchresult",
     element: <SearchResultPage />,
-  },
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

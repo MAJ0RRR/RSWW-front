@@ -45,6 +45,7 @@ function HomePage() {
       <SearchBar />
       <div className="page-content">
         <div className="page-title">Popular directions</div>
+        {error && <div style={{textAlign: "center", color: "red"}}>Error: {error}</div>}
         {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
         {!loading &&
           popularDestinations.map((item) => (

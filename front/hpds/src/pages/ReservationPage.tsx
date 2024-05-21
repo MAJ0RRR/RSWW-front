@@ -3,121 +3,161 @@ import "../styles/ReservationPageStyles.css";
 import "rsuite/dist/rsuite.min.css";
 import { Button, InputNumber } from "rsuite";
 import { Checkbox } from "rsuite";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import TimeLeft, { getTimeLeft, isTimeLeft } from "../utils/TimeLeft";
 import Timer from "../components/Timer";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import ReservationResponseType from "../responesTypes/ReservationResponseType";
+import TransportOptionResponseType from "../responesTypes/TransportOptionResponseType";
+import HotelResponseType from "../responesTypes/HotelResponseType";
+import {
+  HOTEL_OPTION_ENDPOINT,
+  RESERVATION_ENDPOINT,
+  TRANSPORT_OPTION_ENDPOINT,
+} from "../consts/consts";
+import { AxiosContextType } from "../axios/AxiosProvider";
+import AxiosContext from "../axios/AxiosProvider";
 
 function ReservationPage() {
-  const [reservationFinalized, setReservationFinalized] = useState(false);
+  const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
   const [timeLeftForPayment, setTimeLeftForPayment] = useState<TimeLeft>({
     days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
-
-  const reservation = {
-    toHotelTransportOptionId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    fromHotelTransportOptionId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    hotelId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    numberOfAdults: 1,
-    numberOfUnder3: 1,
-    numberOfUnder10: 1,
-    numberOfUnder18: 1,
-    dateTime: "2024-05-15T15:22:34.025Z",
-    numberOfNights: 2,
+  const { reservationId } = useParams();
+  const [reservation, setReservation] = useState<ReservationResponseType>({
+    id: "",
+    toHotelTransportOptionId: "",
+    fromHotelTransportOptionId: "",
+    hotelId: "",
+    numberOfAdults: 0,
+    numberOfUnder3: 0,
+    numberOfUnder10: 0,
+    numberOfUnder18: 0,
+    dateTime: "",
+    numberOfNights: 0,
     foodIncluded: false,
-    rooms: [
-      {
-        size: 2,
-        number: 1,
-      },
-      {
-        size: 6,
-        number: 2,
-      },
-    ],
-    price: 1000,
-    hotelName: "hotelName",
-    hotelCity: "hotelCity",
-    typeOfTransport: "Plane",
-    fromCity: "fromCity",
+    rooms: [],
+    price: 0,
+    hotelName: "",
+    hotelCity: "",
+    typeOfTransport: "",
+    fromCity: "",
     finalized: false,
-    reservedUntil: "2024-05-18T18:54:00.025Z",
-  };
+    reservedUntil: "",
+    cancellationDate: "",
+  });
+  const [fromHotelTransportOption, setFromHotelTransportOption] =
+    useState<TransportOptionResponseType>({
+      id: "",
+      type: "",
+      start: "",
+      end: "",
+      seatsAvailable: 0,
+      fromCountry: "",
+      fromCity: "",
+      fromStreet: "",
+      fromShowName: "",
+      toCountry: "",
+      toCity: "",
+      toStreet: "",
+      toShowName: "",
+      priceAdult: 0,
+      priceUnder3: 0,
+      priceUnder10: 0,
+      priceUnder18: 0,
+    });
+  const [toHotelTransportOption, setToHotelTransportOption] =
+    useState<TransportOptionResponseType>({
+      id: "",
+      type: "",
+      start: "",
+      end: "",
+      seatsAvailable: 0,
+      fromCountry: "",
+      fromCity: "",
+      fromStreet: "",
+      fromShowName: "",
+      toCountry: "",
+      toCity: "",
+      toStreet: "",
+      toShowName: "",
+      priceAdult: 0,
+      priceUnder3: 0,
+      priceUnder10: 0,
+      priceUnder18: 0,
+    });
+  const [hotel, setHotel] = useState<HotelResponseType>({
+    id: "",
+    name: "",
+    country: "",
+    city: "",
+    street: "",
+    foodPricePerPerson: 0,
+    rooms: [],
+  });
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeftForPayment(
-        getTimeLeft(new Date(), new Date(reservation.reservedUntil))
-      );
-    }, 1000);
-    return () => clearInterval(timer);
+    const fetchData = async () => {
+      try {
+        // get reservation data
+        const reservationResponse =
+          await axiosInstance.get<ReservationResponseType>(
+            RESERVATION_ENDPOINT + `/${reservationId}`
+          );
+        const reservationData = reservationResponse.data;
+
+        // get transportoption data and hotel data in parallel
+        const [
+          fromHotelTransportOptionResponse,
+          toHotelTransportOptionResponse,
+          hotelResponse,
+        ] = await Promise.all([
+          axiosInstance.get<TransportOptionResponseType>(
+            TRANSPORT_OPTION_ENDPOINT +
+              `/${reservationData.fromHotelTransportOptionId}`
+          ),
+          axiosInstance.get<TransportOptionResponseType>(
+            TRANSPORT_OPTION_ENDPOINT +
+              `/${reservationData.toHotelTransportOptionId}`
+          ),
+          axiosInstance.get<HotelResponseType>(
+            HOTEL_OPTION_ENDPOINT + `/${reservationData.hotelId}`
+          ),
+        ]);
+
+        // set all states at once
+        setReservation(reservationData);
+        setFromHotelTransportOption(fromHotelTransportOptionResponse.data);
+        setToHotelTransportOption(toHotelTransportOptionResponse.data);
+        setHotel(hotelResponse.data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (!reservation.finalized) {
+      const timer = setInterval(() => {
+        setTimeLeftForPayment(
+          getTimeLeft(new Date(), new Date(reservation.reservedUntil))
+        );
+      }, 1000);
+      return () => clearInterval(timer);
+    }
   }, [reservation.reservedUntil, timeLeftForPayment]);
 
-  const fromHotelTransportOption = {
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    type: "Plane",
-    start: "2024-05-15T15:24:41.210Z",
-    end: "2024-05-15T15:24:41.210Z",
-    seatsAvailable: 0,
-    fromCountry: "fromCountry",
-    fromCity: "fromCity",
-    fromStreet: "fromStreet",
-    fromShowName: "fromShowName",
-    toCountry: "toCountry",
-    toCity: "toCity",
-    toStreet: "toStreet",
-    toShowName: "toShowName",
-    priceAdult: 1,
-    priceUnder3: 2,
-    priceUnder10: 3,
-    priceUnder18: 4,
-  };
-  const toHotelTransportOption = {
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    type: "Plane",
-    start: "2024-05-15T15:24:41.210Z",
-    end: "2024-05-15T15:24:41.210Z",
-    seatsAvailable: 0,
-    fromCountry: "FromCountry",
-    fromCity: "FromCity",
-    fromStreet: "FromStreet",
-    fromShowName: "fromShowName",
-    toCountry: "toCountry",
-    toCity: "toCity",
-    toStreet: "toStreet",
-    toShowName: "toShowName",
-    priceAdult: 1,
-    priceUnder3: 2,
-    priceUnder10: 3,
-    priceUnder18: 4,
-  };
-  const hotel = {
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    name: "HotelName",
-    country: "Country",
-    city: "City",
-    street: "Street",
-    foodPricePerPerson: 20,
-    rooms: [
-      {
-        price: 10,
-        size: 2,
-        count: 3,
-      },
-      {
-        price: 20,
-        size: 3,
-        count: 6,
-      },
-      {
-        price: 20,
-        size: 6,
-        count: 12,
-      },
-    ],
-  };
   // calculations
   const transportFromPrice =
     reservation.numberOfAdults * fromHotelTransportOption.priceAdult +
@@ -148,14 +188,18 @@ function ReservationPage() {
     " x " +
     `${reservation.numberOfNights}` +
     " nights";
+
   const totalRoomPrice =
-    reservation.rooms
-      .map(
-        (room) =>
-          hotel.rooms.find((hotel_room) => hotel_room.size === room.size)
-            .price * room.number
-      )
-      .reduce((sum, current) => sum + current, 0) * reservation.numberOfNights;
+    reservation.rooms.length > 0
+      ? reservation.rooms
+          .map(
+            (room) =>
+              hotel.rooms.find((hotel_room) => hotel_room.size === room.size)
+                .price * room.number
+          )
+          .reduce((sum, current) => sum + current, 0) *
+        reservation.numberOfNights
+      : 0;
   const totalFoodPrice = reservation.foodIncluded
     ? hotel.foodPricePerPerson * reservation.numberOfNights * totalPeople
     : 0;
@@ -165,7 +209,7 @@ function ReservationPage() {
     <>
       <NavBar />
       <div className="page-content">
-        <div className="page-title">Trip to Hotel Gołebiewski</div>
+        <div className="page-title">Trip to {hotel.name}</div>
         <div className="page-section">
           <div className="page-section-title">General info</div>
           <div className="page-section-content">
@@ -311,7 +355,7 @@ function ReservationPage() {
             Total: {hotelPrice + totalTransportPrice} PLN
           </div>
           <div className="right">
-            {!reservationFinalized && isTimeLeft(timeLeftForPayment) && (
+            {!reservation.finalized && isTimeLeft(timeLeftForPayment) && (
               <>
                 <Timer
                   minutes={timeLeftForPayment.minutes}
@@ -319,14 +363,17 @@ function ReservationPage() {
                 />
               </>
             )}
-            {!reservationFinalized && !isTimeLeft(timeLeftForPayment) && (
+            {reservation.finalized && reservation.cancellationDate && (
               <span style={{ color: "red" }}>No payment</span>
             )}
-            {reservationFinalized && (
+            {reservation.finalized && !reservation.cancellationDate && (
               <span style={{ color: "green" }}>Paid</span>
             )}
-            {!reservationFinalized && isTimeLeft(timeLeftForPayment) && (
-              <Button variant="secondary" className="button-style">
+            {!reservation.finalized && isTimeLeft(timeLeftForPayment) && (
+              <Button
+                className="button-style"
+                onClick={() => navigate(`/payment/${reservationId}`)}
+              >
                 Buy
               </Button>
             )}

@@ -40,6 +40,22 @@ function SearchBar() {
     setSearchedParams({
       ...searchParams,
     });
+    // setSearchParams({
+    //   ...searchParams,
+    //   ["country"]: "",
+    //   ["city"]: "",
+    //   ["whenFrom"]: null,
+    //   ["whenTo"]: null,
+    //   ["howLongFrom"]: 7,
+    //   ["howLongTo"]: 10,
+    //   ["fromCity"]: "",
+    //   ["fromCountry"]: "",
+    //   ["typeOfTransport"]: "",
+    //   ["adults"]: 2,
+    //   ["upTo3"]: 0,
+    //   ["upTo10"]: 0,
+    //   ["upTo18"]: 0,
+    // });
     navigate("/searchresult");
   };
 
@@ -131,13 +147,24 @@ function SearchBar() {
             </div>
             <div className="search-input-group">
               <div className="search-input-field">
-                <label htmlFor="inputField1">From:</label>
+                <label htmlFor="inputField1">From Country:</label>
                 <br />
                 <SelectPicker
                   data={mocked_from}
                   style={{ width: 200 }}
                   onChange={(e) =>
-                    setSearchParams({ ...searchParams, ["from"]: e })
+                    setSearchParams({ ...searchParams, ["fromCountry"]: e })
+                  }
+                />
+              </div>
+              <div className="search-input-field">
+                <label htmlFor="inputField1">From City:</label>
+                <br />
+                <SelectPicker
+                  data={mocked_from}
+                  style={{ width: 200 }}
+                  onChange={(e) =>
+                    setSearchParams({ ...searchParams, ["fromCity"]: e })
                   }
                 />
               </div>

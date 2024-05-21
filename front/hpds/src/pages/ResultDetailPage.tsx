@@ -14,17 +14,36 @@ import TransportOptionResponseType from "../responesTypes/TransportOptionRespons
 import {
   HOTEL_OPTION_ENDPOINT,
   TRANSPORT_OPTION_ENDPOINT,
-  RESERVATION_ENDPOINT_POST,
+  RESERVATION_ENDPOINT,
 } from "../consts/consts";
 import HotelResponseType from "../responesTypes/HotelResponseType";
-import GlobalContext, { GlobalContextType } from "../context/GlobalContextProvider";
+import GlobalContext, {
+  GlobalContextType,
+} from "../context/GlobalContextProvider";
+import HotelRoomsAvailabiltyResponseType from "../responesTypes/HotelRoomsAvailabilityResponseType";
+import ReservationPost from "../requestsTypes/ReservationPost";
 
 function ResultDetailPage() {
   const { auth } = useContext(AuthContext) as AuthContextType;
   const location = useLocation();
   const navigate = useNavigate();
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
-  const { searchedParams, setSearchedParams, selectedTour, setSelectedTour} = useContext(GlobalContext) as GlobalContextType;
+  const {
+    searchedParams,
+    setSearchedParams,
+    selectedTour,
+    setSelectedTour,
+    checkedRooms,
+    setCheckedRooms,
+    foodIncluded,
+    setFoodIncluded,
+    totalRoomPriceString,
+    setTotalRoomPriceString,
+    totalRoomPrice,
+    setTotalRoomPrice,
+    roomPrices,
+    setRoomPrices,
+  } = useContext(GlobalContext) as GlobalContextType;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -77,6 +96,8 @@ function ResultDetailPage() {
     foodPricePerPerson: 0,
     rooms: [{ price: 0, size: 2, count: 2 }],
   });
+  const [hotelAvailableRooms, setHotelAvailableRooms] =
+    useState<HotelRoomsAvailabiltyResponseType>({ rooms: [] });
 
   // get state information
   const tour = selectedTour;
@@ -124,6 +145,17 @@ function ResultDetailPage() {
         setHotel(response3.data);
 
         //hotel available rooms
+        const response4 =
+          await axiosInstance.get<HotelRoomsAvailabiltyResponseType>(
+            HOTEL_OPTION_ENDPOINT + `/${tour.hotelId}` + "/RoomsAvailability",
+            {
+              params: {
+                startDate: "",
+                endDate: "",
+              },
+            }
+          );
+        setHotelAvailableRooms(response4.data);
       } catch (err) {
         setError(err);
       } finally {
@@ -158,19 +190,13 @@ function ResultDetailPage() {
   const totalPeople =
     numberOfAdults + numberOfUnder3 + numberOfUnder10 + numberOfUnder18;
 
-  const [totalRoomPriceString, setTotalRoomPriceString] = useState("");
-  const [totalRoomPrice, setTotalRoomPrice] = useState(0);
-  const [foodIncluded, setFoodIncluded] = useState(false);
-
   const totalFoodPrice = foodIncluded
     ? hotel.foodPricePerPerson * totalPeople * numberOfNights
     : 0;
 
-  const [roomPrices, setRoomPrices] = useState({});
-  const [checkedRooms, setCheckedRooms] = useState([]);
   const hotelPrice = totalFoodPrice + totalRoomPrice;
 
-  const handleRoomChange = (size, count, price) => {
+  const handleRoomChange = (size: number, count: number, price: number) => {
     const newRoomPrices = { ...roomPrices, [size]: count * price };
     setRoomPrices(newRoomPrices);
 
@@ -184,25 +210,41 @@ function ResultDetailPage() {
       (acc, curr) => acc + curr,
       0
     );
-    setTotalRoomPrice(newTotalRoomPrice);
-    setTotalRoomPriceString(
+    setTotalRoomPrice(newTotalRoomPrice * numberOfNights);
+    const newString =
       newCheckedRooms
         .map((room) => `${room.total / room.count} PLN * ${room.count}`)
-        .join(" + ") || ""
-    );
+        .join(" + ") +
+        ")" +
+        ` * ${numberOfNights} nights` || "";
+    setTotalRoomPriceString("(" + newString);
   };
   const handleReserve = async () => {
     if (!auth.is_logged_in) {
       navigate("/login", { state: { from: window.location.pathname } });
     } else {
       try {
-        const response = await axiosInstance.post(
-          RESERVATION_ENDPOINT_POST,
-          {}
-        );
-        const reservationId = response.data.id;
-        console.log(reservationId);
-        navigate(`/reservation/${reservationId}`);
+        const dataToSend = {
+          toHotelTransportOptionId: toHotelTransportOption.id,
+          fromHotelTransportOptionId: fromHotelTransportOption.id,
+          hotelId: hotel.id,
+          numberOfAdults: numberOfAdults,
+          numberOfUnder3: numberOfUnder3,
+          numberOfUnder10: numberOfUnder10,
+          numberOfUnder18: numberOfUnder18,
+          foodIncluded: foodIncluded,
+          rooms: checkedRooms
+            .filter((item) => item.count > 0)
+            .map((item) => ({ size: item.size, number: item.count })),
+        } as ReservationPost;
+        const response = await axiosInstance.post(RESERVATION_ENDPOINT, {
+          ...dataToSend,
+        });
+        if (response.status === 400) {
+          navigate("/");
+        } else {
+          navigate(`/reservation/${response.data.id}`);
+        }
       } catch (err) {
         setError(err.message);
       }
@@ -329,11 +371,28 @@ function ResultDetailPage() {
                 </div>
                 <div className="right">
                   {hotel.foodPricePerPerson * totalPeople} PLN (per night)
-                  <Checkbox
-                    onChange={(value: any, checked: boolean, event) =>
-                      checked ? setFoodIncluded(true) : setFoodIncluded(false)
-                    }
-                  />
+                  {foodIncluded ? (
+                    <>
+                      <Checkbox
+                        defaultChecked
+                        onChange={(value: any, checked: boolean, event) =>
+                          checked
+                            ? setFoodIncluded(true)
+                            : setFoodIncluded(false)
+                        }
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <Checkbox
+                        onChange={(value: any, checked: boolean, event) =>
+                          checked
+                            ? setFoodIncluded(true)
+                            : setFoodIncluded(false)
+                        }
+                      />
+                    </>
+                  )}
                 </div>
               </div>
               <div className="user-input-result-one">
@@ -349,7 +408,7 @@ function ResultDetailPage() {
             </div>
             <div className="page-section-content-title">Room configuration</div>
             <div className="page-section-content-content">
-              {hotel.rooms.map((item) => (
+              {hotelAvailableRooms.rooms.map((item) => (
                 <div className="user-input">
                   <div className="left">
                     <label>
@@ -360,7 +419,13 @@ function ResultDetailPage() {
                     {item.price} PLN (per night)
                     <div style={{ display: "inline-block" }}>
                       <InputNumber
-                        defaultValue={0}
+                        defaultValue={
+                          checkedRooms
+                            ? checkedRooms.find(
+                                (checkedRoom) => checkedRoom.size == item.size
+                              )?.count
+                            : 0
+                        }
                         min={0}
                         max={item.count}
                         style={{ width: 100 }}
@@ -399,13 +464,21 @@ function ResultDetailPage() {
             Total: {hotelPrice + totalTransportPrice} PLN
           </div>
           <div className="right">
-            <Button
-              variant="secondary"
-              className="button-style"
-              onClick={handleReserve}
-            >
-              Reserve
-            </Button>
+            {error ? (
+              <div>
+                You cannot reserve, because there are no available resources.
+              </div>
+            ) : (
+              <>
+                <Button
+                  variant="secondary"
+                  className="button-style"
+                  onClick={handleReserve}
+                >
+                  Reserve
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
