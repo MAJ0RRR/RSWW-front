@@ -42,8 +42,6 @@ function MyTripsPage() {
 
   useEffect(() => {
     if (myReservations.length > 0) {
-      console.log("MYRESERVATION");
-      console.log(myReservations);
       const timers = myReservations
         .filter((reservation) => !reservation.finalized)
         .map((reservation) => {
