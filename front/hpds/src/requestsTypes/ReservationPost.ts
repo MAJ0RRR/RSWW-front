@@ -11,8 +11,6 @@ interface ReservationPost {
     numberOfUnder3: number;
     numberOfUnder10: number;
     numberOfUnder18: number;
-    dateTime: string | "";
-    numberOfNights: number;
     foodIncluded: boolean;
     rooms: Rooms[];
 } 

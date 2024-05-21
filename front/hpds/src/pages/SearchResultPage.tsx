@@ -41,6 +41,7 @@ function SearchResultPage() {
           maxEnd: searchedParams.whenTo,
           minDuration: searchedParams.howLongFrom,
           maxDuration: searchedParams.howLongTo,
+          typeOfTransport: searchedParams.typeOfTransport,
         } as ToursGet;
         const response = await axiosInstance.get<TourResponseType[]>(
           TOURS_ENDPOINT,

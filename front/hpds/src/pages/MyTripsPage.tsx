@@ -84,7 +84,7 @@ function MyTripsPage() {
         <div className="page-title">My trips</div>
         {error && <div>Error occured</div>}
         {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
-        {!loading && myReservations.length === 0 && <div>No trips</div>}
+        {!loading && myReservations.length === 0 && <div style={{textAlign: "center"}}>No trips</div>}
         {!loading && myReservations.length > 0 && (
           <>
             {myReservations.map((item) => (
@@ -120,7 +120,7 @@ function MyTripsPage() {
                         variant="secondary"
                         className="button-style"
                         onClick={() => {
-                          navigate(RESERVATION_ENDPOINT + `${item.id}`);
+                          navigate("/reservation/" + `${item.id}`);
                         }}
                       >
                         Details

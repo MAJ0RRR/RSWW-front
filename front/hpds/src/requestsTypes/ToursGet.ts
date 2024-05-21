@@ -8,6 +8,7 @@ interface ToursGet {
     maxEnd: string;
     minDuration: number;
     maxDuration: number;
+    typeOfTransport: string;
 }
 
 export default ToursGet;

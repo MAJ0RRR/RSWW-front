@@ -29,7 +29,8 @@ function ReservationPage() {
     minutes: 0,
     seconds: 0,
   });
-  const { reservationId } = useParams<string>();
+  const { reservationId } = useParams();
+  console.log(reservationId);
   const [reservation, setReservation] = useState<ReservationResponseType>({
     id: "",
     toHotelTransportOptionId: "",
