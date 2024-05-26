@@ -79,7 +79,6 @@ function SearchResultPage() {
             <div className="page-section-content">
               <div className="elements">
                 <div className="left-50 font-size-36">{item.hotelName}</div>
-                <div className="right-50 font-size-36">TODO PLN</div>
               </div>
               <div className="elements">
                 <div className="left-50">
