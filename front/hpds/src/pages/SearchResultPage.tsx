@@ -43,6 +43,22 @@ function SearchResultPage() {
           maxDuration: searchedParams.howLongTo,
           typeOfTransport: searchedParams.typeOfTransport,
         } as ToursGet;
+        setSearchParams({
+          ...searchParams,
+          ["country"]: "",
+          ["city"]: "",
+          ["whenFrom"]: "",
+          ["whenTo"]: "",
+          ["howLongFrom"]: 7,
+          ["howLongTo"]: 10,
+          ["fromCity"]: "",
+          ["fromCountry"]: "",
+          ["typeOfTransport"]: "",
+          ["adults"]: 2,
+          ["upTo3"]: 0,
+          ["upTo10"]: 0,
+          ["upTo18"]: 0,
+        });
         const response = await axiosInstance.get<TourResponseType[]>(
           TOURS_ENDPOINT,
           { params: dataToSend }
