@@ -11,7 +11,7 @@ const AxiosContext = createContext<AxiosContextType | null>(null);
 
 export const AxiosProvider = ({ children }: { children: ReactNode }) => {
   const { auth } = useContext(AuthContext) as AuthContextType;
-
+  const API_URL = `${window.location.origin}/api`;
   const axiosInstance: AxiosInstance = axios.create({
     baseURL: API_URL,
     timeout: 5000,
