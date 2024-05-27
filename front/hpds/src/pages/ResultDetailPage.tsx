@@ -150,8 +150,8 @@ function ResultDetailPage() {
             HOTEL_OPTION_ENDPOINT + `/${tour.hotelId}` + "/RoomsAvailability",
             {
               params: {
-                startDate: "",
-                endDate: "",
+                Start: response2.data.end.split("T")[0],
+                End: response1.data.start.split("T")[0],
               },
             }
           );
@@ -261,8 +261,8 @@ function ResultDetailPage() {
           <div className="page-section-content">
             <div className="page-section-content-title">Date</div>
             <div className="page-section-content-content">
-              Start: {fromHotelTransportOption?.start} <br />
-              End: {toHotelTransportOption?.end}
+              Start: {toHotelTransportOption?.start} <br />
+              End: {fromHotelTransportOption?.end}
             </div>
           </div>
           <div className="page-section-content">
@@ -308,32 +308,12 @@ function ResultDetailPage() {
                 <div className="two-elements">
                   <div className="left">
                     <div className="page-section-content-title">
-                      From {fromHotelTransportOption?.fromCity} to{" "}
-                      {fromHotelTransportOption?.toCity}
-                    </div>
-                  </div>
-                  <div className="right page-section-content-title">
-                    {transportFromPrice} PLN
-                  </div>
-                </div>
-                <div className="page-section-content-content">
-                  Transport type: {fromHotelTransportOption?.type} <br />
-                  From: {fromHotelTransportOption?.fromShowName} <br />
-                  To: {fromHotelTransportOption?.toShowName} <br />
-                  Start date: {fromHotelTransportOption?.start} <br />
-                  End date: {fromHotelTransportOption?.end}
-                </div>
-              </div>
-              <div className="page-section-content">
-                <div className="two-elements">
-                  <div className="left">
-                    <div className="page-section-content-title">
                       From {toHotelTransportOption?.fromCity} to{" "}
                       {toHotelTransportOption?.toCity}
                     </div>
                   </div>
                   <div className="right page-section-content-title">
-                    {transportToPrice} PLN
+                    {transportFromPrice} PLN
                   </div>
                 </div>
                 <div className="page-section-content-content">
@@ -342,6 +322,26 @@ function ResultDetailPage() {
                   To: {toHotelTransportOption?.toShowName} <br />
                   Start date: {toHotelTransportOption?.start} <br />
                   End date: {toHotelTransportOption?.end}
+                </div>
+              </div>
+              <div className="page-section-content">
+                <div className="two-elements">
+                  <div className="left">
+                    <div className="page-section-content-title">
+                      From {fromHotelTransportOption?.fromCity} to{" "}
+                      {fromHotelTransportOption?.toCity}
+                    </div>
+                  </div>
+                  <div className="right page-section-content-title">
+                    {transportToPrice} PLN
+                  </div>
+                </div>
+                <div className="page-section-content-content">
+                  Transport type: {fromHotelTransportOption?.type} <br />
+                  From: {fromHotelTransportOption?.fromShowName} <br />
+                  To: {fromHotelTransportOption?.toShowName} <br />
+                  Start date: {fromHotelTransportOption?.start} <br />
+                  End date: {fromHotelTransportOption?.end}
                 </div>
               </div>
             </>
@@ -385,6 +385,7 @@ function ResultDetailPage() {
                   ) : (
                     <>
                       <Checkbox
+                        defaultChecked
                         onChange={(value: any, checked: boolean, event) =>
                           checked
                             ? setFoodIncluded(true)
