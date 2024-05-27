@@ -75,10 +75,10 @@ function PaymentPage() {
         RESERVATION_ENDPOINT + `/${reservationId}` + "/Buy",
         { ...dataToSend }
       );
-      if (response.data === true) {
+      if (response.status === 200) {
         navigate(`/reservation/${reservationId}`);
-      } else {
-        setError("Lack of funds / expired card / incorrect data");
+      } else if (response.status === 400){
+        setError(response.data.title);
       }
     } catch (error) {
       setError("Something went wrong");
