@@ -303,11 +303,7 @@ function ReservationPage() {
                 </div>
                 <div className="right">
                   {hotel.foodPricePerPerson * totalPeople} PLN (per night)
-                  {reservation.foodIncluded ? (
-                    <Checkbox defaultChecked disabled></Checkbox>
-                  ) : (
-                    <Checkbox disabled></Checkbox>
-                  )}
+                  <Checkbox checked={reservation.foodIncluded} disabled />
                 </div>
               </div>
               <div className="user-input-result-one">

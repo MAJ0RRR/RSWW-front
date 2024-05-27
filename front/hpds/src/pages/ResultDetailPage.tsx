@@ -150,8 +150,8 @@ function ResultDetailPage() {
             HOTEL_OPTION_ENDPOINT + `/${tour.hotelId}` + "/RoomsAvailability",
             {
               params: {
-                Start: response2.data.end.split('T')[0],
-                End: response1.data.start.split('T')[0],
+                Start: response2.data.end.split("T")[0],
+                End: response1.data.start.split("T")[0],
               },
             }
           );
@@ -385,6 +385,7 @@ function ResultDetailPage() {
                   ) : (
                     <>
                       <Checkbox
+                        defaultChecked
                         onChange={(value: any, checked: boolean, event) =>
                           checked
                             ? setFoodIncluded(true)

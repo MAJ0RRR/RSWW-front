@@ -77,8 +77,6 @@ function PaymentPage() {
       );
       if (response.status === 200) {
         navigate(`/reservation/${reservationId}`);
-      } else if (response.status === 400){
-        setError(response.data.title);
       }
     } catch (error) {
       setError("Something went wrong");
