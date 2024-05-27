@@ -7,18 +7,28 @@ import { InputPicker } from "rsuite";
 import { SelectPicker } from "rsuite";
 import { InputNumber } from "rsuite";
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { AVAILABLE_DESTINATIONS_ENDPOINT } from "../consts/consts";
+import { useContext, useEffect, useState } from "react";
 import GlobalContext, {
   GlobalContextType,
 } from "../context/GlobalContextProvider";
+import AvailableDestinationsResponseType from "../responesTypes/AvailableDestinationsResponseType";
+import AxiosContext, { AxiosContextType } from "../axios/AxiosProvider";
 
 function SearchBar() {
   // variables
   const navigate = useNavigate();
+  const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
   const { searchParams, setSearchParams, searchedParams, setSearchedParams } =
     useContext(GlobalContext) as GlobalContextType;
+  const [availableDestinations, setAvailableDestinations] = useState<
+    AvailableDestinationsResponseType[]
+  >([]);
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [dateRange, setDateRange] = useState<Date[]>(["", ""]);
 
-  const possibleTypesOfTransport = ["Plane", "Bus", "Own"].map((item) => ({
+  const possibleTypesOfTransport = ["Plane", "Bus", "Train"].map((item) => ({
     label: item,
     value: item,
   }));
@@ -40,37 +50,61 @@ function SearchBar() {
     setSearchedParams({
       ...searchParams,
     });
-    // setSearchParams({
-    //   ...searchParams,
-    //   ["country"]: "",
-    //   ["city"]: "",
-    //   ["whenFrom"]: null,
-    //   ["whenTo"]: null,
-    //   ["howLongFrom"]: 7,
-    //   ["howLongTo"]: 10,
-    //   ["fromCity"]: "",
-    //   ["fromCountry"]: "",
-    //   ["typeOfTransport"]: "",
-    //   ["adults"]: 2,
-    //   ["upTo3"]: 0,
-    //   ["upTo10"]: 0,
-    //   ["upTo18"]: 0,
-    // });
+    setSearchParams({
+      ...searchParams,
+      ["country"]: "",
+      ["city"]: "",
+      ["whenFrom"]: "",
+      ["whenTo"]: "",
+      ["howLongFrom"]: 7,
+      ["howLongTo"]: 10,
+      ["fromCity"]: "",
+      ["fromCountry"]: "",
+      ["typeOfTransport"]: "",
+      ["adults"]: 2,
+      ["upTo3"]: 0,
+      ["upTo10"]: 0,
+      ["upTo18"]: 0,
+    });
     navigate("/searchresult");
   };
 
-  // mock data
-  const mocked_countries = ["Poland", "Germany", "Country3", "Country4"].map(
-    (item) => ({ label: item, value: item })
-  );
-  const mocked_cities = ["City1", "City2", "City3", "City4"].map((item) => ({
-    label: item,
-    value: item,
+  // search data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get<
+          AvailableDestinationsResponseType[]
+        >(AVAILABLE_DESTINATIONS_ENDPOINT);
+        setAvailableDestinations(response.data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    // Convert searchParams.whenFrom and searchParams.whenTo to Date objects
+    const fromDate = new Date(searchParams.whenFrom);
+    const toDate = new Date(searchParams.whenTo);
+
+    // Update the date range state
+    setDateRange([fromDate, toDate]);
+  }, [searchParams]);
+
+  const countries = availableDestinations.map((item) => ({
+    label: item.country,
+    value: item.country,
   }));
-  const mocked_from = ["City1", "City2", "City3", "City4"].map((item) => ({
-    label: item,
-    value: item,
-  }));
+
+  const cities = availableDestinations.reduce((acc, curr) => {
+    const cityObjects = curr.cities.map(city => ({ label: city, value: city }));
+    return [...acc, ...cityObjects];
+  }, []);
 
   return (
     <div className="page-content">
@@ -82,7 +116,8 @@ function SearchBar() {
                 <label htmlFor="inputField1">Country:</label>
                 <br />
                 <SelectPicker
-                  data={mocked_countries}
+                  data={countries}
+                  value={searchParams.country}
                   style={{ width: 200 }}
                   onChange={(e) =>
                     setSearchParams({ ...searchParams, ["country"]: e })
@@ -93,7 +128,8 @@ function SearchBar() {
                 <label htmlFor="inputField1">City:</label>
                 <br />
                 <SelectPicker
-                  data={mocked_cities}
+                  data={cities}
+                  value={searchParams.city}
                   style={{ width: 200 }}
                   onChange={(e) =>
                     setSearchParams({ ...searchParams, ["city"]: e })
@@ -105,6 +141,7 @@ function SearchBar() {
                 <br />
                 <DateRangePicker
                   format="dd.MM.yyyy"
+                  value={dateRange}
                   character=" - "
                   onChange={handleDateRangePickerChange}
                 />
@@ -126,7 +163,7 @@ function SearchBar() {
                       <br />
                       <InputNumber
                         min={0}
-                        defaultValue={searchParams.howLongFrom}
+                        value={searchParams.howLongFrom}
                         max={30}
                         onChange={(e) => handleChange(e, "howLongFrom")}
                       />
@@ -136,7 +173,7 @@ function SearchBar() {
                       <br />
                       <InputNumber
                         min={0}
-                        defaultValue={searchParams.howLongTo}
+                        value={searchParams.howLongTo}
                         max={30}
                         onChange={(e) => handleChange(e, "howLongTo")}
                       />
@@ -150,7 +187,8 @@ function SearchBar() {
                 <label htmlFor="inputField1">From Country:</label>
                 <br />
                 <SelectPicker
-                  data={mocked_from}
+                  data={countries}
+                  value={searchParams.fromCountry}
                   style={{ width: 200 }}
                   onChange={(e) =>
                     setSearchParams({ ...searchParams, ["fromCountry"]: e })
@@ -161,7 +199,8 @@ function SearchBar() {
                 <label htmlFor="inputField1">From City:</label>
                 <br />
                 <SelectPicker
-                  data={mocked_from}
+                  data={cities}
+                  value={searchParams.fromCity}
                   style={{ width: 200 }}
                   onChange={(e) =>
                     setSearchParams({ ...searchParams, ["fromCity"]: e })
@@ -173,6 +212,7 @@ function SearchBar() {
                 <br />
                 <InputPicker
                   data={possibleTypesOfTransport}
+                  value={searchParams.typeOfTransport}
                   style={{ width: 200 }}
                   onChange={(e) =>
                     setSearchParams({
@@ -200,7 +240,7 @@ function SearchBar() {
                       <br />
                       <InputNumber
                         min={0}
-                        defaultValue={searchParams.adults}
+                        value={searchParams.adults}
                         max={20}
                         onChange={(e) => handleChange(e, "adults")}
                       />
@@ -210,7 +250,7 @@ function SearchBar() {
                       <br />
                       <InputNumber
                         min={0}
-                        defaultValue={searchParams.upTo3}
+                        value={searchParams.upTo3}
                         max={20}
                         onChange={(e) => handleChange(e, "upTo3")}
                       />
@@ -220,7 +260,7 @@ function SearchBar() {
                       <br />
                       <InputNumber
                         min={0}
-                        defaultValue={searchParams.upTo10}
+                        value={searchParams.upTo10}
                         max={20}
                         onChange={(e) => handleChange(e, "upTo10")}
                       />
@@ -230,7 +270,7 @@ function SearchBar() {
                       <br />
                       <InputNumber
                         min={0}
-                        defaultValue={searchParams.upTo18}
+                        value={searchParams.upTo18}
                         max={20}
                         onChange={(e) => handleChange(e, "upTo18")}
                       />
