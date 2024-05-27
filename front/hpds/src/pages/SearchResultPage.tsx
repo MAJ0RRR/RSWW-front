@@ -32,7 +32,11 @@ function SearchResultPage() {
     const fetchTours = async () => {
       try {
         const dataToSend = {
-          numberOfPeople: searchedParams.adults + searchedParams.upTo3 + searchedParams.upTo10 + searchedParams.upTo18,
+          numberOfPeople:
+            searchedParams.adults +
+            searchedParams.upTo3 +
+            searchedParams.upTo10 +
+            searchedParams.upTo18,
           fromCity: searchedParams.fromCity,
           fromCountry: searchedParams.fromCountry,
           toCountry: searchedParams.country,
@@ -98,7 +102,7 @@ function SearchResultPage() {
               </div>
               <div className="elements">
                 <div className="left-50">
-                  Address: {item.fromCity}
+                  Address: {item.hotelCity}
                   <br />
                   Transport: {item.typeOfTransport} from {item.fromCity}
                   <br />
