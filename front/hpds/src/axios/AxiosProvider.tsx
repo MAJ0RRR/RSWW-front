@@ -14,7 +14,7 @@ export const AxiosProvider = ({ children }: { children: ReactNode }) => {
   const API_URL = `${window.location.origin}/api`;
   const axiosInstance: AxiosInstance = axios.create({
     baseURL: API_URL,
-    timeout: 5000,
+    timeout: 50000,
     headers: {
       "Content-Type": "application/json",
     },
