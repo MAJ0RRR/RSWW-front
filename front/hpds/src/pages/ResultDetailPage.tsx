@@ -371,29 +371,14 @@ function ResultDetailPage() {
                 </div>
                 <div className="right">
                   {hotel.foodPricePerPerson * totalPeople} PLN (per night)
-                  {foodIncluded ? (
-                    <>
-                      <Checkbox
-                        defaultChecked
-                        onChange={(value: any, checked: boolean, event) =>
-                          checked
-                            ? setFoodIncluded(true)
-                            : setFoodIncluded(false)
-                        }
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <Checkbox
-                        defaultChecked
-                        onChange={(value: any, checked: boolean, event) =>
-                          checked
-                            ? setFoodIncluded(true)
-                            : setFoodIncluded(false)
-                        }
-                      />
-                    </>
-                  )}
+                  <Checkbox
+                    checked={foodIncluded}
+                    onChange={(value: any, checked: boolean, event) =>
+                      checked
+                        ? setFoodIncluded(true)
+                        : setFoodIncluded(false)
+                    }
+                    />
                 </div>
               </div>
               <div className="user-input-result-one">
