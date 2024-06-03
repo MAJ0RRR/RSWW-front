@@ -25,7 +25,6 @@ import ReservationPost from "../requestsTypes/ReservationPost";
 
 function ResultDetailPage() {
   const { auth } = useContext(AuthContext) as AuthContextType;
-  const location = useLocation();
   const navigate = useNavigate();
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
   const {
@@ -46,6 +45,8 @@ function ResultDetailPage() {
   } = useContext(GlobalContext) as GlobalContextType;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [notEnoughtRoomsSelected, setNotEnoughtRoomsSelected] =
+    useState<boolean>();
 
   const [fromHotelTransportOption, setFromHotelTransportOption] =
     useState<TransportOptionResponseType>({
@@ -166,6 +167,18 @@ function ResultDetailPage() {
     fetchTourDetails();
   }, [selectedTour]);
 
+  useEffect(() => {
+    const sum = checkedRooms.reduce((acc, item) => {
+      return acc + item.size * item.count;
+    }, 0);
+
+    if (checkedRooms.length === 0 || sum < totalPeople) {
+      setNotEnoughtRoomsSelected(true);
+    } else {
+      setNotEnoughtRoomsSelected(false);
+    }
+  }, [checkedRooms]);
+
   if (error) {
     return (
       <>
@@ -205,6 +218,7 @@ function ResultDetailPage() {
       newCheckedRooms.push({ size, count, total: count * price });
     }
     setCheckedRooms(newCheckedRooms);
+    console.log(newCheckedRooms);
 
     const newTotalRoomPrice = Object.values(newRoomPrices).reduce(
       (acc, curr) => acc + curr,
@@ -374,11 +388,9 @@ function ResultDetailPage() {
                   <Checkbox
                     checked={foodIncluded}
                     onChange={(value: any, checked: boolean, event) =>
-                      checked
-                        ? setFoodIncluded(true)
-                        : setFoodIncluded(false)
+                      checked ? setFoodIncluded(true) : setFoodIncluded(false)
                     }
-                    />
+                  />
                 </div>
               </div>
               <div className="user-input-result-one">
@@ -454,6 +466,20 @@ function ResultDetailPage() {
               <div>
                 You cannot reserve, because there are no available resources.
               </div>
+            ) : notEnoughtRoomsSelected ? (
+              <>
+                <Button
+                  variant="secondary"
+                  disabled
+                  className="button-style"
+                  onClick={handleReserve}
+                >
+                  Reserve
+                </Button>
+                <p style={{ color: "red", fontSize: "15px" }}>
+                  Not enough rooms selected.
+                </p>
+              </>
             ) : (
               <>
                 <Button

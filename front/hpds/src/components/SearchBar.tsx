@@ -33,10 +33,22 @@ function SearchBar() {
     value: item,
   }));
 
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  };
+  
   // handlers
   const handleDateRangePickerChange = (e) => {
-    setSearchParams({ ...searchParams, ["whenFrom"]: e[0], ["whenTo"]: e[1] });
+    const fromDate = formatDate(new Date(e[0]));
+    const toDate = formatDate(new Date(e[1]));
+    
+    console.log(fromDate);
+    setSearchParams({ ...searchParams, ["whenFrom"]: fromDate, ["whenTo"]: toDate });
   };
+
   const handleChange = (e, name: string) => {
     const value = parseInt(e);
     if (value) {
