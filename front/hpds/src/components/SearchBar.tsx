@@ -96,6 +96,10 @@ function SearchBar() {
     setDateRange([fromDate, toDate]);
   }, [searchParams]);
 
+  useEffect(() => {
+    setDateRange(["", ""]);
+  }, [searchedParams]);
+
   const countries = availableDestinations.map((item) => ({
     label: item.country,
     value: item.country,
