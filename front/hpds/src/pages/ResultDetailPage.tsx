@@ -183,7 +183,7 @@ function ResultDetailPage() {
     return (
       <>
         <NavBar />
-        <div className="page-content">Something went wrong</div>
+        <div className="page-content-my-trips-and-reservation">Something went wrong</div>
       </>
     );
   }
@@ -268,7 +268,7 @@ function ResultDetailPage() {
   return (
     <>
       <NavBar />
-      <div className="page-content">
+      <div className="page-content-my-trips-and-reservation">
         <div className="page-title">Trip to {hotel?.name}</div>
         <div className="page-section">
           <div className="page-section-title">General info</div>

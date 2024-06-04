@@ -1,7 +1,7 @@
 import NavBar from "../components/NavBar";
 import SearchBar from "../components/SearchBar";
 import Button from "react-bootstrap/Button";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import TourResponseType from "../responesTypes/TourResponseType";
 import { TOURS_ENDPOINT } from "../consts/consts";
@@ -11,9 +11,9 @@ import GlobalContext, {
   GlobalContextType,
 } from "../context/GlobalContextProvider";
 import ToursGet from "../requestsTypes/ToursGet";
+import Notifications from "../components/Notifications";
 
 function SearchResultPage() {
-  const location = useLocation();
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -81,53 +81,58 @@ function SearchResultPage() {
   return (
     <>
       <NavBar />
-      <SearchBar />
-      <div className="page-content">
-        <div className="page-title">Holidays {searchedParams.country}</div>
-        {error && (
-          <div style={{ textAlign: "center", color: "red" }}>
-            Error: {error}
-          </div>
-        )}
-        {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
-        {!loading && tours.length === 0 && (
-          <div style={{ textAlign: "center" }}>No results</div>
-        )}
-        {!loading &&
-          tours.length > 0 &&
-          tours.map((item) => (
-            <div className="page-section-content">
-              <div className="elements">
-                <div className="left-50 font-size-36">{item.hotelName}</div>
+      <div className="main-container">
+        <div className="main-content">
+          <SearchBar />
+          <div className="page-content">
+            <div className="page-title">Holidays {searchedParams.country}</div>
+            {error && (
+              <div style={{ textAlign: "center", color: "red" }}>
+                Error: {error}
               </div>
-              <div className="elements">
-                <div className="left-50">
-                  Address: {item.hotelCity}
-                  <br />
-                  Transport: {item.typeOfTransport} from {item.fromCity}
-                  <br />
-                  Date: {item.dateTime}
-                  <br />
-                  Duration: {item.numberOfNights}
-                  <br />
-                </div>
-                <div className="right-50-relative">
-                  <div className="bottom-right">
-                    <Button
-                      variant="secondary"
-                      className="button-style"
-                      onClick={() => {
-                        setSelectedTour(item);
-                        navigate("/resultdetail");
-                      }}
-                    >
-                      Check offer
-                    </Button>
+            )}
+            {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
+            {!loading && tours.length === 0 && (
+              <div style={{ textAlign: "center" }}>No results</div>
+            )}
+            {!loading &&
+              tours.length > 0 &&
+              tours.map((item) => (
+                <div className="page-section-content">
+                  <div className="elements">
+                    <div className="left-50 font-size-36">{item.hotelName}</div>
+                  </div>
+                  <div className="elements">
+                    <div className="left-50">
+                      Address: {item.hotelCity}
+                      <br />
+                      Transport: {item.typeOfTransport} from {item.fromCity}
+                      <br />
+                      Date: {item.dateTime}
+                      <br />
+                      Duration: {item.numberOfNights}
+                      <br />
+                    </div>
+                    <div className="right-50-relative">
+                      <div className="bottom-right">
+                        <Button
+                          variant="secondary"
+                          className="button-style"
+                          onClick={() => {
+                            setSelectedTour(item);
+                            navigate("/resultdetail");
+                          }}
+                        >
+                          Check offer
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              ))}
+          </div>
+        </div>
+        <Notifications notificationsList={[]}/>
       </div>
     </>
   );
