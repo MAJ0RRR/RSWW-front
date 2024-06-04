@@ -160,6 +160,7 @@ function SearchBar() {
                   value={dateRange}
                   character=" - "
                   onChange={handleDateRangePickerChange}
+                  style={{width: "200px"}}
                 />
               </div>
               <div className="search-input-field">
