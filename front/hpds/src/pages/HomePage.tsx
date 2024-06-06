@@ -23,22 +23,22 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchPopularDestinations = async () => {
-      try {
-        const response = await axiosInstance.get<
-          PopularDestinationResponseType[]
-        >(POPULAR_DESTINATIONS_ENDPOINT);
-        setPopularDestinations(response.data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchPopularDestinations = async () => {
+  //     try {
+  //       const response = await axiosInstance.get<
+  //         PopularDestinationResponseType[]
+  //       >(POPULAR_DESTINATIONS_ENDPOINT);
+  //       setPopularDestinations(response.data);
+  //     } catch (err) {
+  //       setError(err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchPopularDestinations();
-  }, []);
+  //   fetchPopularDestinations();
+  // }, []);
 
   return (
     <>
@@ -78,6 +78,36 @@ function HomePage() {
                         Check offers
                       </Button>
                     </div>
+                  </div>
+                </div>
+              ))}
+            <div className="page-title">Popular hotels</div>
+            {error && (
+              <div style={{ textAlign: "center", color: "red" }}>
+                Error: {error}
+              </div>
+            )}
+            {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
+            {!loading &&
+              popularDestinations.map((item) => (
+                <div className="page-section-content">
+                  <div className="elements">
+                    <div className="left-50 font-size-36">{item.country}</div>
+                  </div>
+                </div>
+              ))}
+            <div className="page-title">Popular type of transport</div>
+            {error && (
+              <div style={{ textAlign: "center", color: "red" }}>
+                Error: {error}
+              </div>
+            )}
+            {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
+            {!loading &&
+              popularDestinations.map((item) => (
+                <div className="page-section-content">
+                  <div className="elements">
+                    <div className="left-50 font-size-36">{item.country}</div>
                   </div>
                 </div>
               ))}
