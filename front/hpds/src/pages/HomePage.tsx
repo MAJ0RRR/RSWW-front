@@ -11,6 +11,9 @@ import GlobalContext, {
   GlobalContextType,
 } from "../context/GlobalContextProvider";
 import Notifications from "../components/Notifications";
+import WebsocketContext, {
+  WebsocketContextType,
+} from "../websockets/WebsocketProvider";
 
 function HomePage() {
   const [popularDestinations, setPopularDestinations] = useState<
@@ -19,26 +22,36 @@ function HomePage() {
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
   const { searchParams, setSearchParams, searchedParams, setSearchedParams } =
     useContext(GlobalContext) as GlobalContextType;
+  const { lastJsonMessageTours } = useContext(
+    WebsocketContext
+  ) as WebsocketContextType;
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchPopularDestinations = async () => {
-      try {
-        const response = await axiosInstance.get<
-          PopularDestinationResponseType[]
-        >(POPULAR_DESTINATIONS_ENDPOINT);
-        setPopularDestinations(response.data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchPopularDestinations = async () => {
+  //     try {
+  //       const response = await axiosInstance.get<
+  //         PopularDestinationResponseType[]
+  //       >(POPULAR_DESTINATIONS_ENDPOINT);
+  //       setPopularDestinations(response.data);
+  //     } catch (err) {
+  //       setError(err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchPopularDestinations();
-  }, []);
+  //   fetchPopularDestinations();
+  // }, []);
+
+  useEffect(() => {
+    console.log(
+      `Got a new message: ${JSON.stringify(lastJsonMessageTours, null, 2)}`
+    );
+  }, [lastJsonMessageTours]);
 
   return (
     <>

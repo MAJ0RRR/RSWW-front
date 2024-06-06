@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from "axios";
-import { API_URL } from "../consts/consts";
 import { ReactNode, createContext, useContext } from "react";
 import AuthContext, { AuthContextType } from "../context/AuthProvider";
 
