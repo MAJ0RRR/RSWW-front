@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import GlobalContext, {
   GlobalContextType,
 } from "../context/GlobalContextProvider";
+import Notifications from "../components/Notifications";
 
 function HomePage() {
   const [popularDestinations, setPopularDestinations] = useState<
@@ -42,38 +43,74 @@ function HomePage() {
   return (
     <>
       <NavBar />
-      <SearchBar />
-      <div className="page-content">
-        <div className="page-title">Popular directions</div>
-        {error && <div style={{textAlign: "center", color: "red"}}>Error: {error}</div>}
-        {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
-        {!loading &&
-          popularDestinations.map((item) => (
-            <div className="page-section-content">
-              <div className="elements">
-                <div className="left-50 font-size-36">{item.country}</div>
-                <div className="right-50 font-size-36">
-                  <Button
-                    variant="secondary"
-                    className="font-size-36"
-                    onClick={() => {
-                      setSearchParams({
-                        ...searchParams,
-                        ["country"]: item.country,
-                      });
-                      setSearchedParams({
-                        ...searchParams,
-                        ["country"]: item.country,
-                      });
-                      navigate("/searchresult");
-                    }}
-                  >
-                    Check offers
-                  </Button>
-                </div>
+      <div className="main-container">
+        <div className="main-content">
+          <SearchBar />
+          <div className="page-content">
+            <div className="page-title">Popular directions</div>
+            {error && (
+              <div style={{ textAlign: "center", color: "red" }}>
+                Error: {error}
               </div>
-            </div>
-          ))}
+            )}
+            {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
+            {!loading &&
+              popularDestinations.map((item) => (
+                <div className="page-section-content">
+                  <div className="elements">
+                    <div className="left-50 font-size-36">{item.country}</div>
+                    <div className="right-50 font-size-36">
+                      <Button
+                        variant="secondary"
+                        className="font-size-36"
+                        onClick={() => {
+                          setSearchParams({
+                            ...searchParams,
+                            ["country"]: item.country,
+                          });
+                          setSearchedParams({
+                            ...searchParams,
+                            ["country"]: item.country,
+                          });
+                          navigate("/searchresult");
+                        }}
+                      >
+                        Check offers
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+        <Notifications
+          notificationsList={[
+            "gowno1",
+            "gowno2",
+            "gowno4",
+            "gowno1",
+            "gowno2",
+            "gowno4",
+            "gowno1",
+            "gowno2",
+            "gowno4",
+            "gowno1",
+            "gowno2",
+            "gowno4",
+            "gowno1",
+            "gowno2",
+            "gowno4",
+            "gowno1",
+            "gowno2",
+            "gowno4",
+            "gowno1",
+            "gowno2",
+            "gowno4",
+            "gowno1",
+            "gowno2",
+            "gowno4",
+          ]}
+        />
       </div>
     </>
   );

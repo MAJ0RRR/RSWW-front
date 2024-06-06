@@ -8,7 +8,7 @@ import ReservationBuy from "../requestsTypes/ReservationBuy";
 import { AxiosContextType } from "../axios/AxiosProvider";
 import AxiosContext from "../axios/AxiosProvider";
 import { RESERVATION_ENDPOINT } from "../consts/consts";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ReservationResponseType from "../responesTypes/ReservationResponseType";
 
 function PaymentPage() {

@@ -6,7 +6,7 @@ import { Checkbox } from "rsuite";
 import { useContext, useEffect, useState } from "react";
 import TimeLeft, { getTimeLeft, isTimeLeft } from "../utils/TimeLeft";
 import Timer from "../components/Timer";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ReservationResponseType from "../responesTypes/ReservationResponseType";
 import TransportOptionResponseType from "../responesTypes/TransportOptionResponseType";
 import HotelResponseType from "../responesTypes/HotelResponseType";
@@ -21,7 +21,6 @@ import AxiosContext from "../axios/AxiosProvider";
 function ReservationPage() {
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
   const navigate = useNavigate();
-  const location = useLocation();
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [timeLeftForPayment, setTimeLeftForPayment] = useState<TimeLeft>({
@@ -208,7 +207,7 @@ function ReservationPage() {
   return (
     <>
       <NavBar />
-      <div className="page-content">
+      <div className="page-content-my-trips-and-reservation">
         <div className="page-title">Trip to {hotel.name}</div>
         <div className="page-section">
           <div className="page-section-title">General info</div>

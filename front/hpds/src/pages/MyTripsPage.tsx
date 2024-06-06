@@ -84,7 +84,7 @@ function MyTripsPage() {
   return (
     <>
       <NavBar />
-      <div className="page-content">
+      <div className="page-content-my-trips-and-reservation">
         <div className="page-title">My trips</div>
         {error && <div>Error occured</div>}
         {loading && <div style={{ textAlign: "center" }}>Loading...</div>}
