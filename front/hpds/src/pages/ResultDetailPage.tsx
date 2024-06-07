@@ -22,9 +22,13 @@ import GlobalContext, {
 } from "../context/GlobalContextProvider";
 import HotelRoomsAvailabiltyResponseType from "../responesTypes/HotelRoomsAvailabilityResponseType";
 import ReservationPost from "../requestsTypes/ReservationPost";
+import WebsocketContext, { WebsocketContextType } from "../websockets/WebsocketProvider";
 
 function ResultDetailPage() {
   const { auth } = useContext(AuthContext) as AuthContextType;
+  const { lastJsonMessageTours } = useContext(
+    WebsocketContext
+  ) as WebsocketContextType;
   const navigate = useNavigate();
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
   const {
@@ -179,11 +183,24 @@ function ResultDetailPage() {
     }
   }, [checkedRooms]);
 
+  useEffect(() => {
+    // if message is not null
+    if (lastJsonMessageTours) {
+      // message from discount
+      if (Object.keys(lastJsonMessageTours).length == 1) {
+        fetchPopularThings();
+        fetchReservation(lastJsonMessageTours.ReservatonId);
+      }
+    }
+  }, [lastJsonMessageTours]);
+
   if (error) {
     return (
       <>
         <NavBar />
-        <div className="page-content-my-trips-and-reservation">Something went wrong</div>
+        <div className="page-content-my-trips-and-reservation">
+          Something went wrong
+        </div>
       </>
     );
   }

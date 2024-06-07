@@ -20,6 +20,8 @@ export interface GlobalContextType {
   setTotalRoomPrice: (totalRoomPrice: number) => void;
   roomPrices: Record<number, number>;
   setRoomPrices: (roomPrices: Record<number, number>) => void;
+  notifications: string[];
+  setNotifications: (notifications: string[]) => void;
 }
 
 const GlobalContext = createContext<GlobalContextType | null>(null);
@@ -75,6 +77,7 @@ export const GlobalContextProvider = ({
   const [totalRoomPriceString, setTotalRoomPriceString] = useState<string>("");
   const [totalRoomPrice, setTotalRoomPrice] = useState<number>(0);
   const [roomPrices, setRoomPrices] = useState<Record<number, number>>({});
+  const [notifications, setNotifications] = useState<string[]>([]);
 
   return (
     <GlobalContext.Provider
@@ -95,6 +98,8 @@ export const GlobalContextProvider = ({
         setTotalRoomPrice,
         roomPrices,
         setRoomPrices,
+        notifications,
+        setNotifications,
       }}
     >
       {children}

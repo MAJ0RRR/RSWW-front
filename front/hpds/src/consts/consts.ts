@@ -1,6 +1,8 @@
 export const API_URL = "api";
 export const LOGIN_ENDPOINT = "/Auth/Login";
-export const POPULAR_DESTINATIONS_ENDPOINT = "/Destinations/PopularOffers";
+export const POPULAR_TRANSPORT_TYPES_ENDPOINT = "/TransportOptions/PopularTransportTypes";
+export const POPULAR_HOTELS = "/Hotels/PopularHotels";
+export const POPULAR_TRANSPORT_DESTINATIONS = "/TransportOptions/PopularTransportDestinations";
 export const AVAILABLE_DESTINATIONS_ENDPOINT = "/Destinations/AvailableDestinations";
 export const TOURS_ENDPOINT = "/Tours";
 export const TRANSPORT_OPTION_ENDPOINT = "/TransportOptions";
