@@ -2,6 +2,7 @@ import { ReactNode, createContext, useState } from "react";
 import SearchParams from "../requestsTypes/SearchParams";
 import TourResponseType from "../responesTypes/TourResponseType";
 import CheckedRoomsType from "../generalTypes/generalTypes";
+import NotificationList from "../generalTypes/notificationListType";
 
 export interface GlobalContextType {
   searchParams: SearchParams;
@@ -20,8 +21,8 @@ export interface GlobalContextType {
   setTotalRoomPrice: (totalRoomPrice: number) => void;
   roomPrices: Record<number, number>;
   setRoomPrices: (roomPrices: Record<number, number>) => void;
-  notifications: string[];
-  setNotifications: (notifications: string[]) => void;
+  notifications: NotificationList[];
+  setNotifications: (notifications: NotificationList[]) => void;
 }
 
 const GlobalContext = createContext<GlobalContextType | null>(null);

@@ -25,9 +25,8 @@ function HomePage() {
   const { notifications, setNotifications } = useContext(
     GlobalContext
   ) as GlobalContextType;
-  const { lastJsonMessageTours } = useContext(
-    WebsocketContext
-  ) as WebsocketContextType;
+  const { lastJsonMessageToursBought, lastJsonMessageToursReserved } =
+    useContext(WebsocketContext) as WebsocketContextType;
   const [popularTransportTypes, setPopularTransportTypes] = useState<string[]>(
     []
   );
@@ -67,6 +66,9 @@ function HomePage() {
 
   const fetchReservation = async (reservationId: string) => {
     try {
+      if(notifications.some(notification => notification.key === reservationId)){
+        return;
+      }
       const reservationResponse =
         await axiosInstance.get<ReservationResponseType>(
           RESERVATION_ENDPOINT + `/${reservationId}`
@@ -74,8 +76,9 @@ function HomePage() {
       // Update notifications here after fetching reservation
       setNotifications((prevNotifications) => [
         ...prevNotifications,
-        `Someone has reserved tour to hotel ${reservationResponse.data.hotelName} in ${reservationResponse.data.hotelCity}`,
+        { key: reservationId, message: `Someone has bought tour to hotel ${reservationResponse.data.hotelName} in ${reservationResponse.data.hotelCity}` },
       ]);
+
     } catch (err) {
       setError(err);
     } finally {
@@ -84,19 +87,16 @@ function HomePage() {
   };
 
   useEffect(() => {
-    fetchPopularThings();
-  }, []);
+    if (lastJsonMessageToursReserved) {
+      fetchPopularThings();
+    }
+  }, [lastJsonMessageToursReserved]);
 
   useEffect(() => {
-    // if message is not null
-    if (lastJsonMessageTours) {
-      // message from tour
-      if (Object.keys(lastJsonMessageTours).length == 4) {
-        fetchPopularThings();
-        fetchReservation(lastJsonMessageTours.ReservatonId);
-      }
+    if (lastJsonMessageToursBought) {
+        fetchReservation(lastJsonMessageToursBought.ReservatonId);
     }
-  }, [lastJsonMessageTours]);
+  }, [lastJsonMessageToursBought]);
 
   return (
     <>

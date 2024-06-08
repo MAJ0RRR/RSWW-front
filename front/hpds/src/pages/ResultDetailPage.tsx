@@ -22,7 +22,9 @@ import GlobalContext, {
 } from "../context/GlobalContextProvider";
 import HotelRoomsAvailabiltyResponseType from "../responesTypes/HotelRoomsAvailabilityResponseType";
 import ReservationPost from "../requestsTypes/ReservationPost";
-import WebsocketContext, { WebsocketContextType } from "../websockets/WebsocketProvider";
+import WebsocketContext, {
+  WebsocketContextType,
+} from "../websockets/WebsocketProvider";
 
 function ResultDetailPage() {
   const { auth } = useContext(AuthContext) as AuthContextType;
@@ -112,6 +114,21 @@ function ResultDetailPage() {
   const numberOfUnder18 = searchedParams.upTo18;
   const numberOfNights = selectedTour.numberOfNights;
 
+  // get availableRooms
+  const fetchAvailableRooms = async (response2, response1) => {
+    const response4 =
+      await axiosInstance.get<HotelRoomsAvailabiltyResponseType>(
+        HOTEL_OPTION_ENDPOINT + `/${tour.hotelId}` + "/RoomsAvailability",
+        {
+          params: {
+            Start: response2.data.end.split("T")[0],
+            End: response1.data.start.split("T")[0],
+          },
+        }
+      );
+    setHotelAvailableRooms(response4.data);
+  };
+
   // get transportOptionInfo and hotelOptionInfo
   useEffect(() => {
     const fetchTourDetails = async () => {
@@ -150,17 +167,7 @@ function ResultDetailPage() {
         setHotel(response3.data);
 
         //hotel available rooms
-        const response4 =
-          await axiosInstance.get<HotelRoomsAvailabiltyResponseType>(
-            HOTEL_OPTION_ENDPOINT + `/${tour.hotelId}` + "/RoomsAvailability",
-            {
-              params: {
-                Start: response2.data.end.split("T")[0],
-                End: response1.data.start.split("T")[0],
-              },
-            }
-          );
-        setHotelAvailableRooms(response4.data);
+        fetchAvailableRooms(response2, response1);
       } catch (err) {
         setError(err);
       } finally {
@@ -185,11 +192,44 @@ function ResultDetailPage() {
 
   useEffect(() => {
     // if message is not null
+    console.log("aa");
     if (lastJsonMessageTours) {
       // message from discount
+      console.log("a");
       if (Object.keys(lastJsonMessageTours).length == 1) {
-        fetchPopularThings();
-        fetchReservation(lastJsonMessageTours.ReservatonId);
+        console.log("b");
+        if (lastJsonMessageTours.Id === hotel.id) {
+          console.log("c");
+          fetchAvailableRooms(
+            toHotelTransportOption.end,
+            fromHotelTransportOption.start
+          );
+          console.log("fetched");
+          setHotelAvailableRooms({
+            rooms: [
+              {
+                price: 12,
+                size: 2,
+                count: 3,
+              },
+              {
+                price: 1,
+                size: 4,
+                count: 1,
+              },
+              {
+                price: 3,
+                size: 3,
+                count: 2,
+              },
+              {
+                price: 4,
+                size: 5,
+                count: 2,
+              },
+            ],
+          });
+        }
       }
     }
   }, [lastJsonMessageTours]);
