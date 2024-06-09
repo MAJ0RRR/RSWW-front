@@ -135,7 +135,7 @@ function HomePage() {
                 <div className="page-section-content">
                   <div className="elements">
                     <div className="font-size-36">
-                      {item.item3} - {item.item2} - {item.item1}
+                      {item.Name} - {item.Country} - {item.City}
                     </div>
                   </div>
                 </div>

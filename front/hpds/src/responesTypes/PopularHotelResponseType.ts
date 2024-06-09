@@ -1,7 +1,7 @@
 interface PopularHotelResponseType {
-    item1: string;
-    item2: string;
-    item3: string;
+    Name: string;
+    Country: string;
+    City: string;
 } 
 
 export default PopularHotelResponseType;
