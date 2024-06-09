@@ -444,11 +444,11 @@ function ResultDetailPage() {
                   </div>
                 </div>
                 <div className="page-section-content-content">
-                  Transport type: {toHotelTransportOption?.type} <br />
-                  From: {toHotelTransportOption?.fromShowName} <br />
-                  To: {toHotelTransportOption?.toShowName} <br />
-                  Start date: {toHotelTransportOption?.start} <br />
-                  End date: {toHotelTransportOption?.end}
+                  Transport type: {toHotelTransportOption.type} <br />
+                  From: {toHotelTransportOption.fromStreet}, {toHotelTransportOption.fromCity} <br />
+                  To: {toHotelTransportOption.toStreet}, {toHotelTransportOption.toCity} <br />
+                  Start date: {toHotelTransportOption.start} <br />
+                  End date: {toHotelTransportOption.end}
                 </div>
               </div>
               <div className="page-section-content">
@@ -465,10 +465,10 @@ function ResultDetailPage() {
                 </div>
                 <div className="page-section-content-content">
                   Transport type: {fromHotelTransportOption?.type} <br />
-                  From: {fromHotelTransportOption?.fromShowName} <br />
-                  To: {fromHotelTransportOption?.toShowName} <br />
-                  Start date: {fromHotelTransportOption?.start} <br />
-                  End date: {fromHotelTransportOption?.end}
+                  From: {fromHotelTransportOption.fromStreet}, {fromHotelTransportOption.fromCity} <br />
+                  To: {fromHotelTransportOption.toStreet}, {fromHotelTransportOption.toCity} <br />
+                  Start date: {fromHotelTransportOption.start} <br />
+                  End date: {fromHotelTransportOption.end}
                 </div>
               </div>
             </>
