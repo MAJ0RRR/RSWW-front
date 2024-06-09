@@ -45,7 +45,6 @@ function SearchBar() {
     const fromDate = formatDate(new Date(e[0]));
     const toDate = formatDate(new Date(e[1]));
     
-    console.log(fromDate);
     setSearchParams({ ...searchParams, ["whenFrom"]: fromDate, ["whenTo"]: toDate });
   };
 

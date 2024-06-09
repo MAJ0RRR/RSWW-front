@@ -47,15 +47,13 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <GlobalContextProvider>
-      <AuthProvider>
-        <AxiosProvider>
-          <WebsocketProvider>
-            <RouterProvider router={router} />
-          </WebsocketProvider>
-        </AxiosProvider>
-      </AuthProvider>
-    </GlobalContextProvider>
-  </React.StrictMode>
+  <GlobalContextProvider>
+    <AuthProvider>
+      <AxiosProvider>
+        <WebsocketProvider>
+          <RouterProvider router={router} />
+        </WebsocketProvider>
+      </AxiosProvider>
+    </AuthProvider>
+  </GlobalContextProvider>
 );
