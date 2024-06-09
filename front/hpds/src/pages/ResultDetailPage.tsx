@@ -25,6 +25,7 @@ import ReservationPost from "../requestsTypes/ReservationPost";
 import WebsocketContext, {
   WebsocketContextType,
 } from "../websockets/WebsocketProvider";
+import CheckedRoomsType from "../generalTypes/generalTypes";
 
 function ResultDetailPage() {
   const { auth } = useContext(AuthContext) as AuthContextType;
@@ -38,21 +39,16 @@ function ResultDetailPage() {
     setSearchedParams,
     selectedTour,
     setSelectedTour,
-    checkedRooms,
-    setCheckedRooms,
-    foodIncluded,
-    setFoodIncluded,
-    totalRoomPriceString,
-    setTotalRoomPriceString,
-    totalRoomPrice,
-    setTotalRoomPrice,
-    roomPrices,
-    setRoomPrices,
   } = useContext(GlobalContext) as GlobalContextType;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [notEnoughtRoomsSelected, setNotEnoughtRoomsSelected] =
     useState<boolean>();
+  const [checkedRooms, setCheckedRooms] = useState<CheckedRoomsType[]>([]);
+  const [foodIncluded, setFoodIncluded] = useState<boolean>(false);
+  const [totalRoomPriceString, setTotalRoomPriceString] = useState<string>("");
+  const [totalRoomPrice, setTotalRoomPrice] = useState<number>(0);
+  const [roomPrices, setRoomPrices] = useState<Record<number, number>>({});
 
   const [fromHotelTransportOption, setFromHotelTransportOption] =
     useState<TransportOptionResponseType>({
@@ -180,7 +176,10 @@ function ResultDetailPage() {
         // hotelInfo
         fetchHotelInfo();
         //hotel available rooms
-        fetchAvailableRooms((await response2).data.end, (await response1).data.start);
+        fetchAvailableRooms(
+          (await response2).data.end,
+          (await response1).data.start
+        );
       } catch (err) {
         setError(err);
       } finally {
@@ -484,7 +483,12 @@ function ResultDetailPage() {
                         max={item.count}
                         style={{ width: 100 }}
                         onChange={(value) =>
-                          handleRoomChange(item.size, value, hotel.rooms.find((room) => room.size === item.size)?.price)
+                          handleRoomChange(
+                            item.size,
+                            value,
+                            hotel.rooms.find((room) => room.size === item.size)
+                              ?.price
+                          )
                         }
                       />
                     </div>

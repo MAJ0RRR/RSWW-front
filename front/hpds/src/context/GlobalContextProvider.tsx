@@ -1,7 +1,6 @@
 import { ReactNode, createContext, useState } from "react";
 import SearchParams from "../requestsTypes/SearchParams";
 import TourResponseType from "../responesTypes/TourResponseType";
-import CheckedRoomsType from "../generalTypes/generalTypes";
 import NotificationList from "../generalTypes/notificationListType";
 
 export interface GlobalContextType {
@@ -11,16 +10,6 @@ export interface GlobalContextType {
   setSearchedParams: (searchedParams: SearchParams) => void;
   selectedTour: TourResponseType;
   setSelectedTour: (selectedTour: TourResponseType) => void;
-  checkedRooms: CheckedRoomsType[];
-  setCheckedRooms: (checkedRooms: CheckedRoomsType[]) => void;
-  foodIncluded: boolean;
-  setFoodIncluded: (foodIncluded: boolean) => void;
-  totalRoomPriceString: string;
-  setTotalRoomPriceString: (totalRoomPriceString: string) => void;
-  totalRoomPrice: number;
-  setTotalRoomPrice: (totalRoomPrice: number) => void;
-  roomPrices: Record<number, number>;
-  setRoomPrices: (roomPrices: Record<number, number>) => void;
   notifications: NotificationList[];
   setNotifications: (notifications: NotificationList[]) => void;
 }
@@ -73,11 +62,6 @@ export const GlobalContextProvider = ({
     dateTime: "",
     numberOfNights: 0,
   });
-  const [checkedRooms, setCheckedRooms] = useState<CheckedRoomsType[]>([]);
-  const [foodIncluded, setFoodIncluded] = useState<boolean>(false);
-  const [totalRoomPriceString, setTotalRoomPriceString] = useState<string>("");
-  const [totalRoomPrice, setTotalRoomPrice] = useState<number>(0);
-  const [roomPrices, setRoomPrices] = useState<Record<number, number>>({});
   const [notifications, setNotifications] = useState<NotificationList[]>([]);
 
   return (
@@ -89,16 +73,6 @@ export const GlobalContextProvider = ({
         setSearchedParams,
         selectedTour,
         setSelectedTour,
-        checkedRooms,
-        setCheckedRooms,
-        foodIncluded,
-        setFoodIncluded,
-        totalRoomPriceString,
-        setTotalRoomPriceString,
-        totalRoomPrice,
-        setTotalRoomPrice,
-        roomPrices,
-        setRoomPrices,
         notifications,
         setNotifications,
       }}
