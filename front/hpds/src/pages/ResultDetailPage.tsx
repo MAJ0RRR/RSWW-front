@@ -237,7 +237,9 @@ function ResultDetailPage() {
     });
 
     const newRoomPrices = hotelAvailableRooms.rooms.reduce((acc, room) => {
-      acc[room.size] = 0;
+      acc[room.size] = newCheckedRooms.find(
+        (chroom) => chroom.size == room.size
+      )?.total;
       return acc;
     }, {} as Record<number, number>);
 
@@ -264,23 +266,24 @@ function ResultDetailPage() {
         ")" +
         ` * ${numberOfNights} nights` || "";
     setTotalRoomPriceString("(" + newString);
-  }, [hotelAvailableRooms]);
+    console.log(newCheckedRooms);
+  }, [hotelAvailableRooms, hotel]);
 
-  // useEffect(() => {
-  //   if (lastJsonMessageDiscounts && lastJsonMessageDiscounts.Id === hotel.id) {
-  //     fetchHotelInfo();
-  //   } else if (
-  //     lastJsonMessageDiscounts &&
-  //     lastJsonMessageDiscounts.Id === toHotelTransportOption.id
-  //   ) {
-  //     fetchToHotelTransportOption();
-  //   } else if (
-  //     lastJsonMessageDiscounts &&
-  //     lastJsonMessageDiscounts.Id === fromHotelTransportOption.id
-  //   ) {
-  //     fetchFromHotelTransportOption();
-  //   }
-  // }, [lastJsonMessageDiscounts]);
+  useEffect(() => {
+    if (lastJsonMessageDiscounts && lastJsonMessageDiscounts.Id === hotel.id) {
+      fetchHotelInfo();
+    } else if (
+      lastJsonMessageDiscounts &&
+      lastJsonMessageDiscounts.Id === toHotelTransportOption.id
+    ) {
+      fetchToHotelTransportOption();
+    } else if (
+      lastJsonMessageDiscounts &&
+      lastJsonMessageDiscounts.Id === fromHotelTransportOption.id
+    ) {
+      fetchFromHotelTransportOption();
+    }
+  }, [lastJsonMessageDiscounts]);
 
   if (error) {
     return (
