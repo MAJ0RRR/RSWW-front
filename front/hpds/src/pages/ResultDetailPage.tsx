@@ -274,7 +274,6 @@ function ResultDetailPage() {
       newCheckedRooms.push({ size, count, total: count * price });
     }
     setCheckedRooms(newCheckedRooms);
-    console.log(newCheckedRooms);
 
     const newTotalRoomPrice = Object.values(newRoomPrices).reduce(
       (acc, curr) => acc + curr,
