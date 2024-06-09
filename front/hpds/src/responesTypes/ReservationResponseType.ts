@@ -1,6 +1,7 @@
 interface Rooms {
+    price: number,
     size: number;
-    number: number;
+    count: number;
 }
 
 
@@ -18,6 +19,9 @@ interface ReservationResponseType {
   foodIncluded: boolean,
   rooms: Rooms[],
   price: number,
+  foodPricePerNight: number,
+  toTransportOptionPrice: number,
+  fromTransportOptionPrice: number,
   hotelName: string,
   hotelCity: string,
   typeOfTransport: string,
