@@ -78,7 +78,7 @@ export const GlobalContextProvider = ({
   const [totalRoomPriceString, setTotalRoomPriceString] = useState<string>("");
   const [totalRoomPrice, setTotalRoomPrice] = useState<number>(0);
   const [roomPrices, setRoomPrices] = useState<Record<number, number>>({});
-  const [notifications, setNotifications] = useState<string[]>([]);
+  const [notifications, setNotifications] = useState<NotificationList[]>([]);
 
   return (
     <GlobalContext.Provider

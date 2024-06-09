@@ -304,7 +304,7 @@ function ResultDetailPage() {
           foodIncluded: foodIncluded,
           rooms: checkedRooms
             .filter((item) => item.count > 0)
-            .map((item) => ({ size: item.size, number: item.count })),
+            .map((item) => ({ size: item.size, count: item.count })),
         } as ReservationPost;
         const response = await axiosInstance.post(RESERVATION_ENDPOINT, {
           ...dataToSend,

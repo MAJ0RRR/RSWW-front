@@ -1,6 +1,6 @@
 interface Rooms {
     size: number;
-    number: number;
+    count: number;
 }
 
 interface ReservationPost {
