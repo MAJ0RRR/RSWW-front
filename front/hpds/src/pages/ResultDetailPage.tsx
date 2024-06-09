@@ -22,9 +22,15 @@ import GlobalContext, {
 } from "../context/GlobalContextProvider";
 import HotelRoomsAvailabiltyResponseType from "../responesTypes/HotelRoomsAvailabilityResponseType";
 import ReservationPost from "../requestsTypes/ReservationPost";
+import WebsocketContext, {
+  WebsocketContextType,
+} from "../websockets/WebsocketProvider";
 
 function ResultDetailPage() {
   const { auth } = useContext(AuthContext) as AuthContextType;
+  const { lastJsonMessageToursReserved, lastJsonMessageDiscounts } = useContext(
+    WebsocketContext
+  ) as WebsocketContextType;
   const navigate = useNavigate();
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
   const {
@@ -108,55 +114,73 @@ function ResultDetailPage() {
   const numberOfUnder18 = searchedParams.upTo18;
   const numberOfNights = selectedTour.numberOfNights;
 
-  // get transportOptionInfo and hotelOptionInfo
+  // get availableRooms
+  const fetchAvailableRooms = async (start: string, end: string) => {
+    const response = await axiosInstance.get<HotelRoomsAvailabiltyResponseType>(
+      HOTEL_OPTION_ENDPOINT + `/${tour.hotelId}` + "/RoomsAvailability",
+      {
+        params: {
+          Start: start.split("T")[0],
+          End: end.split("T")[0],
+        },
+      }
+    );
+    setHotelAvailableRooms(response.data);
+  };
+
+  // get hotel info
+  const fetchHotelInfo = async () => {
+    const response3 = await axiosInstance.get<HotelResponseType>(
+      HOTEL_OPTION_ENDPOINT + `/${tour.hotelId}`,
+      {
+        params: {
+          fromTimeStamp: tour.dateTime,
+        },
+      }
+    );
+    setHotel(response3.data);
+  };
+
+  // get toTransportOption
+  const fetchToHotelTransportOption = async () => {
+    const response = await axiosInstance.get<TransportOptionResponseType>(
+      TRANSPORT_OPTION_ENDPOINT + `/${tour.toHotelTransportOptionId}`,
+      {
+        params: {
+          fromTimeStamp: tour.dateTime,
+        },
+      }
+    );
+    setToHotelTransportOption(response.data);
+    return response;
+  };
+
+  // get fromTransportOption
+  const fetchFromHotelTransportOption = async () => {
+    const response = await axiosInstance.get<TransportOptionResponseType>(
+      TRANSPORT_OPTION_ENDPOINT + `/${tour.fromHotelTransportOptionId}`,
+      {
+        params: {
+          fromTimeStamp: tour.dateTime,
+        },
+      }
+    );
+    setFromHotelTransportOption(response.data);
+    return response;
+  };
+
+  // get tour details
   useEffect(() => {
     const fetchTourDetails = async () => {
       try {
         // transportOptionFrom
-        const response1 = await axiosInstance.get<TransportOptionResponseType>(
-          TRANSPORT_OPTION_ENDPOINT + `/${tour.fromHotelTransportOptionId}`,
-          {
-            params: {
-              fromTimeStamp: tour.dateTime,
-            },
-          }
-        );
-        setFromHotelTransportOption(response1.data);
-
+        const response1 = fetchFromHotelTransportOption();
         // transportOptionTo
-        const response2 = await axiosInstance.get<TransportOptionResponseType>(
-          TRANSPORT_OPTION_ENDPOINT + `/${tour.toHotelTransportOptionId}`,
-          {
-            params: {
-              fromTimeStamp: tour.dateTime,
-            },
-          }
-        );
-        setToHotelTransportOption(response2.data);
-
+        const response2 = fetchToHotelTransportOption();
         // hotelInfo
-        const response3 = await axiosInstance.get<HotelResponseType>(
-          HOTEL_OPTION_ENDPOINT + `/${tour.hotelId}`,
-          {
-            params: {
-              fromTimeStamp: tour.dateTime,
-            },
-          }
-        );
-        setHotel(response3.data);
-
+        fetchHotelInfo();
         //hotel available rooms
-        const response4 =
-          await axiosInstance.get<HotelRoomsAvailabiltyResponseType>(
-            HOTEL_OPTION_ENDPOINT + `/${tour.hotelId}` + "/RoomsAvailability",
-            {
-              params: {
-                Start: response2.data.end.split("T")[0],
-                End: response1.data.start.split("T")[0],
-              },
-            }
-          );
-        setHotelAvailableRooms(response4.data);
+        fetchAvailableRooms((await response2).data.end, (await response1).data.start);
       } catch (err) {
         setError(err);
       } finally {
@@ -179,11 +203,43 @@ function ResultDetailPage() {
     }
   }, [checkedRooms]);
 
+  // useEffect(() => {
+  //   if (
+  //     lastJsonMessageToursReserved &&
+  //     lastJsonMessageToursReserved.HotelId === hotel.id
+  //   ) {
+  //     console.log(toHotelTransportOption.end);
+  //     console.log(fromHotelTransportOption.start);
+  //     fetchAvailableRooms(
+  //       toHotelTransportOption.end,
+  //       fromHotelTransportOption.start
+  //     );
+  //   }
+  // }, [lastJsonMessageToursReserved]);
+
+  // useEffect(() => {
+  //   if (lastJsonMessageDiscounts && lastJsonMessageDiscounts.Id === hotel.id) {
+  //     fetchHotelInfo();
+  //   } else if (
+  //     lastJsonMessageDiscounts &&
+  //     lastJsonMessageDiscounts.Id === toHotelTransportOption.id
+  //   ) {
+  //     fetchToHotelTransportOption();
+  //   } else if (
+  //     lastJsonMessageDiscounts &&
+  //     lastJsonMessageDiscounts.Id === fromHotelTransportOption.id
+  //   ) {
+  //     fetchFromHotelTransportOption();
+  //   }
+  // }, [lastJsonMessageDiscounts]);
+
   if (error) {
     return (
       <>
         <NavBar />
-        <div className="page-content-my-trips-and-reservation">Something went wrong</div>
+        <div className="page-content-my-trips-and-reservation">
+          Something went wrong
+        </div>
       </>
     );
   }
@@ -414,13 +470,14 @@ function ResultDetailPage() {
                     </label>
                   </div>
                   <div className="right">
-                    {item.price} PLN (per night)
+                    {hotel.rooms.find((room) => room.size === item.size)?.price}{" "}
+                    PLN (per night)
                     <div style={{ display: "inline-block" }}>
                       <InputNumber
                         defaultValue={
                           checkedRooms
                             ? checkedRooms.find(
-                                (checkedRoom) => checkedRoom.size == item.size
+                                (checkedRoom) => checkedRoom.size === item.size
                               )?.count
                             : 0
                         }
@@ -428,7 +485,7 @@ function ResultDetailPage() {
                         max={item.count}
                         style={{ width: 100 }}
                         onChange={(value) =>
-                          handleRoomChange(item.size, value, item.price)
+                          handleRoomChange(item.size, value, hotel.rooms.find((room) => room.size === item.size)?.price)
                         }
                       />
                     </div>

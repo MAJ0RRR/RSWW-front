@@ -12,6 +12,7 @@ import SearchResultPage from "./pages/SearchResultPage";
 import { AuthProvider } from "./context/AuthProvider";
 import { GlobalContextProvider } from "./context/GlobalContextProvider";
 import { AxiosProvider } from "./axios/AxiosProvider";
+import { WebsocketProvider } from "./websockets/WebsocketProvider";
 
 const router = createBrowserRouter([
   {
@@ -42,7 +43,7 @@ const router = createBrowserRouter([
   {
     path: "/searchresult",
     element: <SearchResultPage />,
-  }
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -50,7 +51,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <GlobalContextProvider>
       <AuthProvider>
         <AxiosProvider>
-          <RouterProvider router={router} />
+          <WebsocketProvider>
+            <RouterProvider router={router} />
+          </WebsocketProvider>
         </AxiosProvider>
       </AuthProvider>
     </GlobalContextProvider>

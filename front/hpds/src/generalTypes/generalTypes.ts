@@ -3,4 +3,5 @@ interface CheckedRoomsType {
     count: number;
     total: number;
 }
+
 export default CheckedRoomsType;

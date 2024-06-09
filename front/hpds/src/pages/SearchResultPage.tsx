@@ -25,6 +25,8 @@ function SearchResultPage() {
     setSearchedParams,
     selectedTour,
     setSelectedTour,
+    notifications,
+    setNotifications,
   } = useContext(GlobalContext) as GlobalContextType;
   const [tours, setTours] = useState<TourResponseType[]>([]);
 
@@ -132,7 +134,7 @@ function SearchResultPage() {
               ))}
           </div>
         </div>
-        <Notifications notificationsList={[]}/>
+        <Notifications notificationsList={notifications} />
       </div>
     </>
   );
