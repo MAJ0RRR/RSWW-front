@@ -226,7 +226,14 @@ function ResultDetailPage() {
 
   useEffect(() => {
     const newCheckedRooms = hotelAvailableRooms.rooms.map((room) => {
-      return { size: room.size, count: 0, total: 0 };
+      const existingRoom = checkedRooms.find(
+        (checkedRoom) => checkedRoom.size === room.size
+      );
+      const count = existingRoom ? Math.min(existingRoom.count, room.count) : 0;
+      const price =
+        hotel.rooms.find((hotelRoom) => hotelRoom.size === room.size)?.price ||
+        0;
+      return { size: room.size, count: count, total: count * price };
     });
 
     const newRoomPrices = hotelAvailableRooms.rooms.reduce((acc, room) => {
@@ -314,7 +321,6 @@ function ResultDetailPage() {
     const newCheckedRooms = checkedRooms.filter((room) => room.size !== size);
     newCheckedRooms.push({ size, count, total: count * price });
     setCheckedRooms(newCheckedRooms);
-    console.log(newCheckedRooms);
 
     const newTotalRoomPrice = Object.values(newRoomPrices).reduce(
       (acc, curr) => acc + curr,
