@@ -1,5 +1,4 @@
 interface NotificationList {
-    key: string;
     message: string;
 }
 

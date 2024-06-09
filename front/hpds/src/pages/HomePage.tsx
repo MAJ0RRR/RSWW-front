@@ -64,41 +64,9 @@ function HomePage() {
     }
   };
 
-  const fetchReservation = async (reservationId: string) => {
-    try {
-      if (
-        notifications.some((notification) => notification.key === reservationId)
-      ) {
-        return;
-      }
-      const reservationResponse =
-        await axiosInstance.get<ReservationResponseType>(
-          RESERVATION_ENDPOINT + `/${reservationId}`
-        );
-      // Update notifications here after fetching reservation
-      setNotifications((prevNotifications) => [
-        ...prevNotifications,
-        {
-          key: reservationId,
-          message: `Someone has bought tour to hotel ${reservationResponse.data.hotelName} in ${reservationResponse.data.hotelCity}`,
-        },
-      ]);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     fetchPopularThings();
   }, [lastJsonMessageToursReserved]);
-
-  useEffect(() => {
-    if (lastJsonMessageToursBought) {
-      fetchReservation(lastJsonMessageToursBought.ReservatonId);
-    }
-  }, [lastJsonMessageToursBought]);
 
   return (
     <>
