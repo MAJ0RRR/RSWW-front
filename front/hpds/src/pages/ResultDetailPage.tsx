@@ -34,12 +34,8 @@ function ResultDetailPage() {
   ) as WebsocketContextType;
   const navigate = useNavigate();
   const { axiosInstance } = useContext(AxiosContext) as AxiosContextType;
-  const {
-    searchedParams,
-    setSearchedParams,
-    selectedTour,
-    setSelectedTour,
-  } = useContext(GlobalContext) as GlobalContextType;
+  const { searchedParams, setSearchedParams, selectedTour, setSelectedTour } =
+    useContext(GlobalContext) as GlobalContextType;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [notEnoughtRoomsSelected, setNotEnoughtRoomsSelected] =
@@ -202,19 +198,73 @@ function ResultDetailPage() {
     }
   }, [checkedRooms]);
 
-  // useEffect(() => {
-  //   if (
-  //     lastJsonMessageToursReserved &&
-  //     lastJsonMessageToursReserved.HotelId === hotel.id
-  //   ) {
-  //     console.log(toHotelTransportOption.end);
-  //     console.log(fromHotelTransportOption.start);
-  //     fetchAvailableRooms(
-  //       toHotelTransportOption.end,
-  //       fromHotelTransportOption.start
-  //     );
-  //   }
-  // }, [lastJsonMessageToursReserved]);
+  useEffect(() => {
+    if (
+      lastJsonMessageToursReserved &&
+      lastJsonMessageToursReserved.HotelId === hotel.id
+    ) {
+      fetchAvailableRooms(
+        toHotelTransportOption.end,
+        fromHotelTransportOption.start
+      );
+      // setCheckedRooms((prevCheckedRooms) =>
+      //   prevCheckedRooms.map((room) => {
+      //     const availableRoom = hotelAvailableRooms.rooms.find(
+      //       (available) => available.size === room.size
+      //     );
+      //     if (availableRoom) {
+      //       return {
+      //         ...room,
+      //         count: Math.min(room.count, availableRoom.count),
+      //       };
+      //     }
+      //     return room;
+      //   })
+      // );
+    }
+  }, [lastJsonMessageToursReserved]);
+
+  useEffect(() => {
+    const newCheckedRooms = hotelAvailableRooms.rooms.map((room) => {
+      const existingRoom = checkedRooms.find(
+        (checkedRoom) => checkedRoom.size === room.size
+      );
+      const count = existingRoom ? Math.min(existingRoom.count, room.count) : 0;
+      const price =
+        hotel.rooms.find((hotelRoom) => hotelRoom.size === room.size)?.price ||
+        0;
+      return { size: room.size, count: count, total: count * price };
+    });
+
+    const newRoomPrices = hotelAvailableRooms.rooms.reduce((acc, room) => {
+      acc[room.size] = 0;
+      return acc;
+    }, {} as Record<number, number>);
+
+    setCheckedRooms(newCheckedRooms);
+    setRoomPrices(newRoomPrices);
+
+    const newTotalRoomPrice = Object.values(newRoomPrices).reduce(
+      (acc, curr) => acc + curr,
+      0
+    );
+    setTotalRoomPrice(newTotalRoomPrice * numberOfNights);
+    const newString =
+      newCheckedRooms
+        .slice()
+        .sort((a, b) => a.size - b.size)
+        .map(
+          (room) =>
+            `${
+              hotel.rooms.find((hotelRoom) => hotelRoom.size === room.size)
+                ?.price
+            } PLN * ${room.count}`
+        )
+        .join(" + ") +
+        ")" +
+        ` * ${numberOfNights} nights` || "";
+    setTotalRoomPriceString("(" + newString);
+  }, [hotelAvailableRooms]);
 
   // useEffect(() => {
   //   if (lastJsonMessageDiscounts && lastJsonMessageDiscounts.Id === hotel.id) {
@@ -269,9 +319,7 @@ function ResultDetailPage() {
     setRoomPrices(newRoomPrices);
 
     const newCheckedRooms = checkedRooms.filter((room) => room.size !== size);
-    if (count > 0) {
-      newCheckedRooms.push({ size, count, total: count * price });
-    }
+    newCheckedRooms.push({ size, count, total: count * price });
     setCheckedRooms(newCheckedRooms);
 
     const newTotalRoomPrice = Object.values(newRoomPrices).reduce(
@@ -281,7 +329,15 @@ function ResultDetailPage() {
     setTotalRoomPrice(newTotalRoomPrice * numberOfNights);
     const newString =
       newCheckedRooms
-        .map((room) => `${room.total / room.count} PLN * ${room.count}`)
+        .slice()
+        .sort((a, b) => a.size - b.size)
+        .map(
+          (room) =>
+            `${
+              hotel.rooms.find((hotelRoom) => hotelRoom.size === room.size)
+                ?.price
+            } PLN * ${room.count}`
+        )
         .join(" + ") +
         ")" +
         ` * ${numberOfNights} nights` || "";
@@ -460,41 +516,52 @@ function ResultDetailPage() {
             </div>
             <div className="page-section-content-title">Room configuration</div>
             <div className="page-section-content-content">
-              {hotelAvailableRooms.rooms.map((item) => (
-                <div className="user-input">
-                  <div className="left">
-                    <label>
-                      Size {item.size} (available {item.count})
-                    </label>
-                  </div>
-                  <div className="right">
-                    {hotel.rooms.find((room) => room.size === item.size)?.price}{" "}
-                    PLN (per night)
-                    <div style={{ display: "inline-block" }}>
-                      <InputNumber
-                        defaultValue={
-                          checkedRooms
-                            ? checkedRooms.find(
-                                (checkedRoom) => checkedRoom.size === item.size
-                              )?.count
-                            : 0
+              {checkedRooms
+                .slice()
+                .sort((a, b) => a.size - b.size)
+                .map((item) => (
+                  <div className="user-input">
+                    <div className="left">
+                      <label>
+                        Size {item.size} (available{" "}
+                        {
+                          hotelAvailableRooms.rooms.find(
+                            (room) => room.size === item.size
+                          )?.count
                         }
-                        min={0}
-                        max={item.count}
-                        style={{ width: 100 }}
-                        onChange={(value) =>
-                          handleRoomChange(
-                            item.size,
-                            value,
-                            hotel.rooms.find((room) => room.size === item.size)
-                              ?.price
-                          )
-                        }
-                      />
+                        )
+                      </label>
+                    </div>
+                    <div className="right">
+                      {
+                        hotel.rooms.find((room) => room.size === item.size)
+                          ?.price
+                      }{" "}
+                      PLN (per night)
+                      <div style={{ display: "inline-block" }}>
+                        <InputNumber
+                          value={item.count}
+                          min={0}
+                          max={
+                            hotelAvailableRooms.rooms.find(
+                              (room) => room.size === item.size
+                            )?.count
+                          }
+                          style={{ width: 100 }}
+                          onChange={(value) =>
+                            handleRoomChange(
+                              item.size,
+                              value,
+                              hotel.rooms.find(
+                                (room) => room.size === item.size
+                              )?.price
+                            )
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
             <div className="user-input-result-two">
               <div className="user-input-result-two-left">
