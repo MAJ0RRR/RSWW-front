@@ -3,10 +3,13 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import GlobalContext, {
   GlobalContextType,
 } from "../context/GlobalContextProvider";
-import ReservationResponseType from "../responesTypes/ReservationResponseType";
-import { HOTEL_OPTION_ENDPOINT, RESERVATION_ENDPOINT } from "../consts/consts";
+import {
+  HOTEL_OPTION_ENDPOINT,
+  TRANSPORT_OPTION_ENDPOINT,
+} from "../consts/consts";
 import HotelResponseType from "../responesTypes/HotelResponseType";
 import AxiosContext from "../axios/AxiosProvider";
+import TransportOptionResponseType from "../responesTypes/TransportOptionResponseType";
 
 export interface WebsocketContextType {
   lastJsonMessageToursReserved: any;
@@ -56,10 +59,10 @@ export const WebsocketProvider = ({ children }: { children: ReactNode }) => {
       );
       // Update notifications here after fetching reservation
       setNotifications((prevNotifications) => [
-        ...prevNotifications,
         {
           message: `Someone has bought tour to hotel ${hotelResponse.data.name} in ${hotelResponse.data.city}`,
         },
+        ...prevNotifications,
       ]);
     } catch (err) {
       console.log(err);
@@ -74,13 +77,42 @@ export const WebsocketProvider = ({ children }: { children: ReactNode }) => {
       );
       // Update notifications here after fetching reservation
       setNotifications((prevNotifications) => [
-        ...prevNotifications,
         {
           message: `Someone has reserved tour to hotel ${hotelResponse.data.name} in ${hotelResponse.data.city}`,
         },
+        ...prevNotifications,
       ]);
     } catch (err) {
       console.log(err);
+    } finally {
+    }
+  };
+
+  const addDiscountNotification = async (id: string) => {
+    try {
+      const response = await axiosInstance.get<HotelResponseType>(
+        HOTEL_OPTION_ENDPOINT + `/${id}`
+      );
+      // it was discount for hotel
+      setNotifications((prevNotifications) => [
+        {
+          message: `Discount added for hotel ${response.data.name} in ${response.data.city}`,
+        },
+        ...prevNotifications,
+      ]);
+    } catch (err) {
+      // it was discount for transport option
+      const response = await axiosInstance.get<TransportOptionResponseType>(
+        TRANSPORT_OPTION_ENDPOINT + `/${id}`
+      );
+      setNotifications((prevNotifications) => [
+        {
+          message: `Discount added for transport from ${
+            response.data.fromCity
+          } to ${response.data.toCity} at ${response.data.start.split(".")[0]}`,
+        },
+        ...prevNotifications,
+      ]);
     } finally {
     }
   };
@@ -96,6 +128,12 @@ export const WebsocketProvider = ({ children }: { children: ReactNode }) => {
       addReservedNotification(lastJsonMessageToursReserved.HotelId);
     }
   }, [lastJsonMessageToursReserved]);
+
+  useEffect(() => {
+    if (lastJsonMessageDiscounts) {
+      addDiscountNotification(lastJsonMessageDiscounts.Id);
+    }
+  }, [lastJsonMessageDiscounts]);
 
   // Pass the required values to the provider
   return (
