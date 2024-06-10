@@ -276,7 +276,7 @@ function ReservationPage() {
             <div className="page-section-content-content">
               Name: {hotel.name} <br />
               Country: {hotel.country} <br />
-              Address: address
+              Address: {hotel?.street}, {hotel?.city}, {hotel?.country}
             </div>
           </div>
           <div className="page-section-content">
