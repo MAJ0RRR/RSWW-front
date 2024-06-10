@@ -49,7 +49,7 @@ export const WebsocketProvider = ({ children }: { children: ReactNode }) => {
     shouldReconnect: () => true,
   });
 
-  const addNotification = async (hotelId: string) => {
+  const addBoughtNotification = async (hotelId: string) => {
     try {
       const hotelResponse = await axiosInstance.get<HotelResponseType>(
         HOTEL_OPTION_ENDPOINT + `/${hotelId}`
@@ -67,11 +67,35 @@ export const WebsocketProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const addReservedNotification = async (hotelId: string) => {
+    try {
+      const hotelResponse = await axiosInstance.get<HotelResponseType>(
+        HOTEL_OPTION_ENDPOINT + `/${hotelId}`
+      );
+      // Update notifications here after fetching reservation
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        {
+          message: `Someone has reserved tour to hotel ${hotelResponse.data.name} in ${hotelResponse.data.city}`,
+        },
+      ]);
+    } catch (err) {
+      console.log(err);
+    } finally {
+    }
+  };
+
   useEffect(() => {
     if (lastJsonMessageToursBought) {
-      addNotification(lastJsonMessageToursBought.HotelId);
+      addBoughtNotification(lastJsonMessageToursBought.HotelId);
     }
   }, [lastJsonMessageToursBought]);
+
+  useEffect(() => {
+    if (lastJsonMessageToursReserved) {
+      addReservedNotification(lastJsonMessageToursReserved.HotelId);
+    }
+  }, [lastJsonMessageToursReserved]);
 
   // Pass the required values to the provider
   return (
