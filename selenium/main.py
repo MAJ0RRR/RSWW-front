@@ -12,7 +12,7 @@ driver.set_window_size(1920, 1080)
 driver.get("http://127.0.0.1:5030/")
 
 # Wait for a few seconds
-driver.implicitly_wait(4)
+driver.implicitly_wait(10)
 
 # Days
 days_button = driver.find_element(By.XPATH, '/html/body/div/div[2]/div/div[1]/div/div[1]/div[4]/div/button')
@@ -20,11 +20,11 @@ days_button.click()
 
 from_days = driver.find_element(By.XPATH, '/html/body/div/div[2]/div/div[1]/div/div[1]/div[4]/div/div/a[1]/div/input')
 from_days.clear()
-from_days.send_keys('1')
+from_days.send_keys('7')
 
 to_days = driver.find_element(By.XPATH, '/html/body/div/div[2]/div/div[1]/div/div[1]/div[4]/div/div/a[2]/div/input')
 to_days.clear()
-to_days.send_keys('15')
+to_days.send_keys('10')
 
 # unclick
 days_button.click()
